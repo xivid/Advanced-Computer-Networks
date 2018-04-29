@@ -75,12 +75,12 @@ class MicroFlowController ():
     """
     packet_parsed = event.parsed
     if not packet_parsed.parsed:
-      log.warning("[_handle_PacketIn] Ignoring incomplete packet")
+      log.warning("%s [_handle_PacketIn] Ignoring incomplete packet" % self.connection)
       return
 
     packet_in = event.ofp
 
-    log.debug("[_handle_PacketIn] Got new packet (%s (%s) -> %s)" % (str(packet_parsed.src), str(packet_in.in_port), str(packet_parsed.dst)))
+    log.debug("%s [_handle_PacketIn] Got new packet (%s (%s) -> %s)" % (self.connection, str(packet_parsed.src), str(packet_in.in_port), str(packet_parsed.dst)))
 
     self.learn_and_resend(packet_parsed, packet_in)
 
@@ -93,7 +93,7 @@ class MicroFlowController ():
     src_mac = str(packet_parsed.src)
     dst_mac = str(packet_parsed.dst)
     
-    log.debug("[learn_and_resend] Processing packet %s (%d) -> %s (?)..." % (src_mac, src_port, dst_mac))
+    log.debug("%s [learn_and_resend] Processing packet %s (%d) -> %s (?)..." % (self.connection, src_mac, src_port, dst_mac))
 
     # Learn the port associated with the source MAC from this packet
     # (whether this is an entry insertion or update does not matter) 
@@ -105,7 +105,7 @@ class MicroFlowController ():
     if dst_mac in self.mac_to_port:  # if destination port is known, resend to it directly
       dst_port = self.mac_to_port[dst_mac]
 
-      log.debug("[learn_and_resend] Dst port known, installing flow %s (%s) -> %s (%s)..." % (src_mac, str(src_port), dst_mac, str(dst_port)))
+      log.debug("%s [learn_and_resend] Dst port known, installing flow %s (%s) -> %s (%s)..." % (self.connection, src_mac, str(src_port), dst_mac, str(dst_port)))
 
       # Create a ofp_flow_mod (flowtable modification) message
       msg = of.ofp_flow_mod()
@@ -128,7 +128,7 @@ class MicroFlowController ():
       self.connection.send(msg)
 
     else:
-      log.debug("[learn_and_resend] Dst port UNknown, flood :(")
+      log.debug("%s [learn_and_resend] Dst port UNknown, flood :(" % self.connection)
       self.resend_packet(packet_in, of.OFPP_ALL)
 
      
