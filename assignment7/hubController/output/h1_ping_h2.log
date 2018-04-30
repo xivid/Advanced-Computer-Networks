@@ -1,4 +1,4 @@
-28009
+# h1 ping -c 100 h2
 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=52.7 ms
 64 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=30.8 ms
