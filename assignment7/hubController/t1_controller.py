@@ -55,12 +55,12 @@ class HubController ():
     """
     packet_parsed = event.parsed
     if not packet_parsed.parsed:
-      log.warning("[_handle_PacketIn] Ignoring incomplete packet")
+      log.warning("%s Ignoring incomplete packet" % self.connection)
       return
 
     packet_in = event.ofp
 
-    log.debug("[_handle_PacketIn] Got new packet (%s (%s) -> %s), flooding..." % (str(packet_parsed.src), str(packet_in.in_port), str(packet_parsed.dst)))
+    log.debug("%s Got new packet (%s (%s) -> %s), flooding..." % (self.connection, str(packet_parsed.src), str(packet_in.in_port), str(packet_parsed.dst)))
 
     self.resend_packet(packet_in, of.OFPP_ALL)
 

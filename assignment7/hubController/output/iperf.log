@@ -1,0 +1,18 @@
+mininet> iperf h1 h5
+*** Iperf: testing TCP bandwidth between h1 and h5
+*** Results: ['8.77 Mbits/sec', '9.83 Mbits/sec']
+mininet> iperf h1 h5
+*** Iperf: testing TCP bandwidth between h1 and h5
+*** Results: ['8.88 Mbits/sec', '9.88 Mbits/sec']
+mininet> iperf h1 h5
+*** Iperf: testing TCP bandwidth between h1 and h5
+*** Results: ['8.50 Mbits/sec', '9.55 Mbits/sec']
+mininet> iperf h1 h2
+*** Iperf: testing TCP bandwidth between h1 and h2
+*** Results: ['16.0 Mbits/sec', '18.3 Mbits/sec']
+mininet> iperf h1 h2
+*** Iperf: testing TCP bandwidth between h1 and h2
+*** Results: ['16.0 Mbits/sec', '18.1 Mbits/sec']
+mininet> iperf h1 h2
+*** Iperf: testing TCP bandwidth between h1 and h2
+*** Results: ['16.0 Mbits/sec', '18.6 Mbits/sec']
