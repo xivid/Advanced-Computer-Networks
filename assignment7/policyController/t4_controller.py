@@ -24,7 +24,7 @@ Custom Topology II
 For all traffic from H1 to H4 or from H2 to H4, they must traverse switch 3.
 For all other traffic (including from H4 to H1 or H2), the default paths will be the shortest paths.
 
-Reference: [pox/pox/forwarding/l2_multi.py]
+Reference: [pox/pox/forwarding/l2_multi.py] and [pox/pox/forwarding/l3_learning.py]
 """
 
 
@@ -85,6 +85,9 @@ class Topology:
       if len(self.switch_links[sw1]) == 0:
         del self.switch_links[sw1]
         self.switches.remove(sw1)
+        for host, (sw, port) in self.host_to_switch.iteritems():
+          if sw == sw1:
+            del self.host_to_switch[host]
 
     log.debug("[Topology] removing link {dpid1 %s, port1 %d} -> {dpid2 %s, port2 %d}" % (dpid_to_str(sw1), pt1, dpid_to_str(sw2), pt2))
 
@@ -101,7 +104,7 @@ class Topology:
     if self.top_switch == None and len(self.switches - self.non_top_switches) == 1:
       # the only one switch that has no directly connected hosts has been found
       self.top_switch = list(self.switches - self.non_top_switches)[0]
-      log.debug("[Topology] Top switch recognised: %s" % dpid_to_str(self.top_switch))
+      log.debug("[Topology] Top switch found: %s" % dpid_to_str(self.top_switch, True))
 
     return True
 
@@ -145,10 +148,10 @@ class Topology:
     # (we recognise the switch with no directly-connected hosts as "switch 3")
     if dst_host == "10.0.0.4" and (src_host == "10.0.0.1" or src_host == "10.0.0.2"):
       assert src_host in self.host_to_switch
-      start_switch = self.host_to_switch[src_host]
-      # if I am switch 1, and the top switch (switch 3) has been recognised
-      if start_switch == current_switch and self.top_switch: 
-        log.debug("[get_next_hop] Implementing special policy (%s -SW3-> %s) on %s" % (src_host, dst_host, dpid_to_str(current_switch, True)))
+      # if I am the source host's directly connected switch (switch 1)
+      # and the top switch (switch 3) has been recognised
+      if self.host_to_switch[src_host][0] == current_switch and self.top_switch is not None: 
+        log.info("[get_next_hop] Implementing special policy (%s -SW3-> %s) on %s" % (src_host, dst_host, dpid_to_str(current_switch, True)))
         return self.switch_links[current_switch][self.top_switch]
 
     # run BFS to find shortest path from current_switch to end_switch
@@ -182,7 +185,7 @@ class Switch:
     self.dpid = connection.dpid
     self.mac_to_port = dict()
     connection.addListeners(self)
-    log.debug("[Switch %s] New switch up" % dpid_to_str(self.dpid, True)) 
+    log.info("[Switch %s] New switch up" % dpid_to_str(self.dpid, True)) 
 
   
   def _handle_PacketIn (self, event):
@@ -217,12 +220,12 @@ class Switch:
 
       # add host (if it is a new host) to the topology
       if self.topology.add_new_host(src_ip, self.dpid, packet_in.in_port, src_mac):  
-        log.debug("[Switch %s] Added new host directly linked to me: %s (%s) through port %d" % (dpid_to_str(self.dpid, True), str(src_ip), str(src_mac), packet_in.in_port))
+        log.info("[Switch %s] Added new host directly linked to me: %s (%s) through port %d" % (dpid_to_str(self.dpid, True), str(src_ip), str(src_mac), packet_in.in_port))
         self.topology.print_graph()
 
       # get the port to next hop (if unreachable, gets None)
       next_hop = self.topology.get_next_hop(self.dpid, src_ip, dst_ip)
-      log.debug("[Switch %s] IP packet from %s to %s, protocol: %s, next hop port: %s" % (dpid_to_str(self.dpid, True), src_ip, dst_ip, "ICMP" if protocol == payload.ICMP_PROTOCOL else "TCP" if protocol == payload.TCP_PROTOCOL else "UDP" if protocol == payload.UDP_PROTOCOL else "UNKNOWN", next_hop))
+      log.info("[Switch %s] IP packet from %s to %s, protocol: %s, next hop port: %s" % (dpid_to_str(self.dpid, True), src_ip, dst_ip, "ICMP" if protocol == payload.ICMP_PROTOCOL else "TCP" if protocol == payload.TCP_PROTOCOL else "UDP" if protocol == payload.UDP_PROTOCOL else "UNKNOWN", next_hop))
 
       # send to next hop (only if there exists a path from to dst)
       if next_hop:
@@ -243,7 +246,7 @@ class Switch:
 
     # add host (if it is a new host) to the topology
     if self.topology.add_new_host(host_ip, self.dpid, packet_in.in_port, host_mac):  
-      log.debug("[Switch %s] Added new host directly linked to me: %s (%s) through port %d" % (dpid_to_str(self.dpid, True), str(host_ip), str(host_mac), packet_in.in_port))
+      log.info("[Switch %s] Added new host directly linked to me: %s (%s) through port %d" % (dpid_to_str(self.dpid, True), str(host_ip), str(host_mac), packet_in.in_port))
       self.topology.print_graph()
 
     # if we know the answer, construct and send an arp reply
