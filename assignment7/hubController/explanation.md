@@ -36,7 +36,7 @@ The hub controller does not learn the topology at all. It just floods all traffi
 
     The minimum/average/maximum/standard deviation of round-trip time is 3.990/27.644/51.938/14.612 ms, respectively. The output log for this command is in `output/h1_ping_h5.log`.
 
-    Surprisingly, the latency is not significantly larger than the previous result. [TODO reason]
+    The latency is almost the same as the previous result. This is because the latency is dominated by communication with controller. The tiny impact on latency by a few more hops is therefore hidden.
 
     All hosts and all switches observe the ping traffic because of flooding, as is shown in the second half of tcpdump results `output/h*_tcpdump.log` (use `sudo tcpdump -ttttnnr [filename]` to read) and controller logs `output/controller.log` (second half).
 
