@@ -151,11 +151,17 @@ class Topology:
       # if current_switch the source host's directly connected switch (switch 1)
       # and the top switch (switch 3) has been recognised
       if self.host_to_switch[src_host][0] == current_switch and self.top_switch is not None: 
-        if self.top_switch in self.switch_links[current_switch]:  # by checking this, if link between s1 and s3 is down, the normal shortest path can still hold the traffic
-          out_port = self.switch_links[current_switch][self.top_switch]
-          log.info("[get_next_hop] Implementing special policy (%s -SW3-> %s) on %s (%d)" % (src_host, dst_host, dpid_to_str(current_switch, True), out_port))
-          return out_port
+        port1 = self._port_to_next_hop(current_switch, self.top_switch)  # port to next hop on the path from current_switch to top_switch, None if unreachable
+        port2 = self._port_to_next_hop(self.top_switch, end_switch)  # port to next hop on the path from top_switch to end_switch, None if unreachable
+        if port1 and port2:  # ensure both are reachable. If path through s3 is down, the normal shortest path can still hold the traffic.
+          log.info("[get_next_hop] Implementing special policy (%s -SW3-> %s) on %s (%d) (%d)" % (src_host, dst_host, dpid_to_str(current_switch, True), port1, port2))
+          return port1
 
+    # no policy, go shortest-path
+    return self._port_to_next_hop(current_switch, end_switch)
+
+
+  def _port_to_next_hop(self, current_switch, end_switch):
     # run BFS to find shortest path from current_switch to end_switch
     q = Queue()
     path_to = defaultdict(lambda:None)
@@ -168,14 +174,14 @@ class Topology:
           path_to[v] = u
           q.put(v)
 
-    # if connected to end_switch, get switch next to current_switch on the shortest path
+    # if connected to end_switch, get the port to next switch from current_switch on the shortest path
     if path_to[end_switch]:
       next_hop = end_switch
       while path_to[next_hop] != current_switch:
         next_hop = path_to[next_hop]
       return self.switch_links[current_switch][next_hop]
-
-    # finally not found
+    
+    # unreachable
     return None
 
 
