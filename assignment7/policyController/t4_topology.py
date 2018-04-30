@@ -21,13 +21,13 @@ class CustomTopoII( Topo ):
         Topo.__init__( self )
 
         # Add hosts and switches
-        host1 = self.addHost( 'h1', ip="10.0.1.1/24" )
-        host2 = self.addHost( 'h2', ip="10.0.1.2/24" )
-        host3 = self.addHost( 'h3', ip="10.0.2.1/24" )
-        host4 = self.addHost( 'h4', ip="10.0.2.2/24" )
-        switch1 = self.addSwitch( 's1' )
-        switch2 = self.addSwitch( 's2' )
-        switch3 = self.addSwitch( 's3' )
+        host1 = self.addHost( 'h1', ip="10.0.0.1/24" )
+        host2 = self.addHost( 'h2', ip="10.0.0.2/24" )
+        host3 = self.addHost( 'h3', ip="10.0.0.3/24" )
+        host4 = self.addHost( 'h4', ip="10.0.0.4/24" )
+        switch1 = self.addSwitch( 's1', dpid="0000111111111111" )
+        switch2 = self.addSwitch( 's2', dpid="0000222222222222" )
+        switch3 = self.addSwitch( 's3', dpid="0000333333333333" )
 
         # Add links
         self.addLink( host1, switch1 )
