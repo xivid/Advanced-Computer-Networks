@@ -151,8 +151,10 @@ class Topology:
       # if current_switch the source host's directly connected switch (switch 1)
       # and the top switch (switch 3) has been recognised
       if self.host_to_switch[src_host][0] == current_switch and self.top_switch is not None: 
-        log.info("[get_next_hop] Implementing special policy (%s -SW3-> %s) on %s" % (src_host, dst_host, dpid_to_str(current_switch, True)))
-        return self.switch_links[current_switch][self.top_switch]
+        if self.top_switch in self.switch_links[current_switch]:  # by checking this, if link between s1 and s3 is down, the normal shortest path can still hold the traffic
+          out_port = self.switch_links[current_switch][self.top_switch]
+          log.info("[get_next_hop] Implementing special policy (%s -SW3-> %s) on %s (%d)" % (src_host, dst_host, dpid_to_str(current_switch, True), out_port))
+          return out_port
 
     # run BFS to find shortest path from current_switch to end_switch
     q = Queue()
