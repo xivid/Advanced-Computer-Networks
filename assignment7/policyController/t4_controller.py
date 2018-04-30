@@ -85,7 +85,7 @@ class Topology:
       if len(self.switch_links[sw1]) == 0:
         del self.switch_links[sw1]
         self.switches.remove(sw1)
-        for host, (sw, port) in self.host_to_switch.iteritems():
+        for host, (sw, port) in self.host_to_switch.items():
           if sw == sw1:
             del self.host_to_switch[host]
 
@@ -210,35 +210,20 @@ class Switch:
     # if ARP
     if packet.type == packet.ARP_TYPE and packet.payload.opcode == arp.REQUEST:
       self.handle_arp (packet, packet_in)
+
     # elif IP
     elif packet.type == packet.IP_TYPE:
-      src_mac = packet.src
-      payload = packet.payload
-      dst_ip = payload.dstip
-      src_ip = payload.srcip
-      protocol = payload.protocol # unused
+      self.handle_ip (packet, packet_in)
 
-      # add host (if it is a new host) to the topology
-      if self.topology.add_new_host(src_ip, self.dpid, packet_in.in_port, src_mac):  
-        log.info("[Switch %s] Added new host directly linked to me: %s (%s) through port %d" % (dpid_to_str(self.dpid, True), str(src_ip), str(src_mac), packet_in.in_port))
-        self.topology.print_graph()
-
-      # get the port to next hop (if unreachable, gets None)
-      next_hop = self.topology.get_next_hop(self.dpid, src_ip, dst_ip)
-      log.info("[Switch %s] IP packet from %s to %s, protocol: %s, next hop port: %s" % (dpid_to_str(self.dpid, True), src_ip, dst_ip, "ICMP" if protocol == payload.ICMP_PROTOCOL else "TCP" if protocol == payload.TCP_PROTOCOL else "UDP" if protocol == payload.UDP_PROTOCOL else "UNKNOWN", next_hop))
-
-      # send to next hop (only if there exists a path from to dst)
-      if next_hop:
-        # TODO: install microflow rules?
-        log.debug("[Switch %s] Redirecting IP packet to next hop out of port %d" % (dpid_to_str(self.dpid, True), next_hop))
-        self.resend_packet(packet_in, next_hop)
-        
+    # drop all other types of packets
     else:
-      # drop all other types of packets
       pass
   
        
   def handle_arp (self, packet, packet_in):
+    """
+    Proxy the ARP replies by the controller rather than flooding.
+    """
     host_ip = packet.payload.protosrc
     query_ip = packet.payload.protodst
     host_mac = packet.src
@@ -271,6 +256,51 @@ class Switch:
       self.connection.send(msg)
 
 
+  def handle_ip (self, packet, packet_in):
+    in_port = packet_in.in_port
+    src_mac = packet.src
+    dst_mac = packet.dst
+
+    payload = packet.payload
+    dst_ip = payload.dstip
+    src_ip = payload.srcip
+    protocol = payload.protocol
+
+    # add host (if it is a new host) to the topology
+    if self.topology.add_new_host(src_ip, self.dpid, in_port, src_mac):  
+      log.info("[Switch %s] Added new host directly linked to me: %s (%s) through port %d" % (dpid_to_str(self.dpid, True), str(src_ip), str(src_mac), in_port))
+      self.topology.print_graph()
+
+    # get the port to next hop (if unreachable, gets None)
+    next_hop = self.topology.get_next_hop(self.dpid, src_ip, dst_ip)
+    log.info("[Switch %s] IP packet from %s to %s, protocol: %s, next hop port: %s" % (dpid_to_str(self.dpid, True), src_ip, dst_ip, "ICMP" if protocol == payload.ICMP_PROTOCOL else "TCP" if protocol == payload.TCP_PROTOCOL else "UDP" if protocol == payload.UDP_PROTOCOL else "UNKNOWN", next_hop))
+
+    # send to next hop (only if there exists a path from to dst)
+    if next_hop:
+      log.debug("[Switch %s] Redirecting IP packet to next hop out of port %d" % (dpid_to_str(self.dpid, True), next_hop))
+      # self.resend_packet(packet_in, next_hop)
+
+      log.info("[Switch %s] Installing flow" % (dpid_to_str(self.dpid, True)))
+      msg = of.ofp_flow_mod()
+
+      # Match the src/dst mac&ip of received packet and the source port
+      msg.match = of.ofp_match(dl_type = pkt.ethernet.IP_TYPE, dl_src = src_mac, dl_dst = dst_mac, nw_src = src_ip, nw_dst = dst_ip, in_port = in_port)
+
+      # Set idle_timeout (timeout for expiry with no traffic)
+      # and hard_timeout (force expiry)
+      msg.idle_timeout = 15
+      msg.hard_timeout = 20 
+
+      # Set buffer id to that of packet_in
+      msg.buffer_id = packet_in.buffer_id
+ 
+      # Add an output action, and send
+      action = of.ofp_action_output(port = next_hop)
+      msg.actions.append(action)
+
+      self.connection.send(msg)
+
+        
   def resend_packet(self, packet_in, out_port):
     msg = of.ofp_packet_out()
     msg.data = packet_in
