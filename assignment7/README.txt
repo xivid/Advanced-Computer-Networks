@@ -52,3 +52,13 @@
 ## System Modifications
 
 None.
+
+This file is renamed from `README.txt` to `README.md` to enable markdown format displaying.
+
+---
+Zhifei Yang (Legi: 17941998)
+
+Computer Science MSc Student
+
+ETH Zürich
+
