@@ -148,7 +148,7 @@ class Topology:
     # (we recognise the switch with no directly-connected hosts as "switch 3")
     if dst_host == "10.0.0.4" and (src_host == "10.0.0.1" or src_host == "10.0.0.2"):
       assert src_host in self.host_to_switch
-      # if I am the source host's directly connected switch (switch 1)
+      # if current_switch the source host's directly connected switch (switch 1)
       # and the top switch (switch 3) has been recognised
       if self.host_to_switch[src_host][0] == current_switch and self.top_switch is not None: 
         log.info("[get_next_hop] Implementing special policy (%s -SW3-> %s) on %s" % (src_host, dst_host, dpid_to_str(current_switch, True)))
@@ -166,7 +166,7 @@ class Topology:
           path_to[v] = u
           q.put(v)
 
-    # if connected to end_switch, get the next switch on the shortest path
+    # if connected to end_switch, get switch next to current_switch on the shortest path
     if path_to[end_switch]:
       next_hop = end_switch
       while path_to[next_hop] != current_switch:
@@ -217,7 +217,7 @@ class Switch:
 
     # drop all other types of packets
     else:
-      pass
+      return
   
        
   def handle_arp (self, packet, packet_in):
