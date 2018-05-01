@@ -4,7 +4,7 @@
 
 1. Launch POX controller.
 
-    First, please copy all controller scripts (./\*Controller/t\*.py) into `~/pox/ext`.
+    First, please copy all controller scripts (./\*Controller/t\*_controller.py) into `~/pox/ext`.
     
     ```
     # Assuming working on the mininet VM, the current directory is ~/pox.
