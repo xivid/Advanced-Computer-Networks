@@ -1,4 +1,6 @@
-# Advanced Computer Networks
+# Assignment 7: OpenFlow
+
+The OpenFlow assignment.
 
 ## How to Run
 
