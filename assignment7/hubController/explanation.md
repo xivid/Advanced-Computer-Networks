@@ -30,7 +30,7 @@ The hub controller does not learn the topology at all. It just floods all traffi
 
     Although the standard deviation is a bit high and the latency is not very stable, it should be explained as normal fluctuations of flooding.
 
-    All hosts and all switches observe the ping traffic because of flooding, as is shown in tcpdump results `output/h*_tcpdump.log` and controller logs `output/controller.log`.
+    All hosts and all switches observe the ping traffic because of flooding, as is shown in tcpdump results `output/h*_tcpdump.log` (use `sudo tcpdump -ttttnnr [filename]` to read) and controller logs `output/controller.log`.
 
 2. On `h1 ping -c 100 h5`:
 
