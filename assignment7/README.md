@@ -55,7 +55,7 @@ The OpenFlow assignment.
 
 None.
 
-This file is renamed from `README.txt` to `README.md` to enable markdown format displaying.
+All `.txt` files are renamed to `.md` to enable markdown formatted display.
 
 ---
 Zhifei Yang (Legi: 17941998)
