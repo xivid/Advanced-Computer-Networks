@@ -52,19 +52,14 @@ It is worth mentioning that the controller are programmed to reply to ARP reques
 
 2. On `ping`ing between any two hosts after topology has been fully learnt:
 
-    The policy is enforced correctly.
+    We run `h1 ping -c1 h2`, `h1 ping -c1 h3`, `h1 ping -c1 h4`, `h2 ping -c1 h3`, `h2 ping -c1 h4`, `h3 ping -c1 h4` one by one. Since a `ping`ing involves sending packets in both directions, and we have proved above that all hosts are pingable to each other, these six tests are sufficient to show that the policies are enforced correctly. The `ping` outputs are in `output/ping.log`.
 
-    [Wireshark traces on all switches]
+    We run three Wireshark instances to capture the traffic on all three switches. The dump files are `output/switch*_wireshark.pcapng`. It can be concluded from the dump results that only `s1` is involved in `h1 ping -c1 h2`, only `s1` and `s2` are involved in `h1 ping -c1 h3`, `s1`, `s2` and `s3` are involved in `h1 ping -c1 h4`, only `s1` and `s2` are involved in `h2 ping -c1 h3`, `s1`, `s2` and `s3` are involved in `h2 ping -c1 h4`, and only `s2` is involved in `h3 ping -c1 h4`. 
 
+    Everything works exactly as expected. Other than `h1 -> h4` and `h2 -> h4`, all traffics flow on the shortest path. The controller uses a BFS algorithm to find the shortest path and installs a microflow rule about the matching conditions and output port on each switch.
 
-
-//    All hosts are pingable as expected. Microflow rules are installed to all involved switches on all hops.
-
-//    The output log for this command is in `output/pingall.log`. The microflow rules dumped from each switch (from command `sudo ovs-ofctl dump-flows [switch]`) is in `output/s*_dumpflows.log`.
-
-3. On `iperf h1 h2` vs `iperf h1 h3` vs `iperf h1 h4`:
+3. On `h1 ping -c 100 h3` vs `h1 ping -c 100 h4`:
  
-    We repeat each experiment by three times. The output log for this command is in `output/iperf.log`. 
+    We repeat each experiment by three times. The output logs are `output/h1_ping_h3.log` and `output/h1_ping_h4.log`. The latencies of the two with respect to sequence numbers are plotted on the same figure `plots/h1_ping_h3_h4.png`.
 
-//    The results are in `Gbits/sec`, which is by orders of magnitude higher than what we have seen on the previous MAC learning controllers, because once microflow rules are installed, matching traffic will no more need to go through the controller in user space, involving no context switch from kernel space to user space.
-
+    Although `h1 -> h4` goes one more hop than `h1 -> h3`, the ping latencies are almost the same. It may result from the extremely short travelling time of one hop as well as the limited accuracy of Linux `ping`.
