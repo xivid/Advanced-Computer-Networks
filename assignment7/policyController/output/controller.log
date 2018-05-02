@@ -1,0 +1,479 @@
+POX 0.2.0 (carp) / Copyright 2011-2013 James McCauley, et al.
+DEBUG:core:POX 0.2.0 (carp) going up...
+DEBUG:core:Running on CPython (2.7.6/Mar 22 2014 22:59:56)
+DEBUG:core:Platform is Linux-3.13.0-24-generic-x86_64-with-Ubuntu-14.04-trusty
+INFO:core:POX 0.2.0 (carp) is up.
+DEBUG:openflow.of_01:Listening on 0.0.0.0:6633
+INFO:openflow.of_01:[None 1] closed
+INFO:openflow.of_01:[11-11-11-11-11-11 2] connected
+DEBUG:openflow.discovery:Installing flow for 11-11-11-11-11-11
+DEBUG:t4_controller:[_handle_ConnectionUp] New connection up: [11-11-11-11-11-11 2], dpid 11-11-11-11-11-11|0.
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] New switch up
+INFO:openflow.of_01:[22-22-22-22-22-22 3] connected
+DEBUG:openflow.discovery:Installing flow for 22-22-22-22-22-22
+DEBUG:t4_controller:[_handle_ConnectionUp] New connection up: [22-22-22-22-22-22 3], dpid 22-22-22-22-22-22|0.
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] New switch up
+INFO:openflow.of_01:[33-33-33-33-33-33 4] connected
+DEBUG:openflow.discovery:Installing flow for 33-33-33-33-33-33
+DEBUG:t4_controller:[_handle_ConnectionUp] New connection up: [33-33-33-33-33-33 4], dpid 33-33-33-33-33-33|0.
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] New switch up
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 33:33:ff:00:00:04), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 33:33:ff:00:00:01), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 33:33:ff:00:00:03), type: others
+INFO:openflow.discovery:link detected: 11-11-11-11-11-11.3 -> 22-22-22-22-22-22.1
+DEBUG:t4_controller:[Topology] adding link {dpid1 11-11-11-11-11-11, port1 3} -> {dpid2 22-22-22-22-22-22, port2 1}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3)
+Hosts:
+None
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 33:33:ff:00:00:02), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 33:33:00:00:00:16), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 33:33:00:00:00:16), type: others
+INFO:openflow.discovery:link detected: 11-11-11-11-11-11.4 -> 33-33-33-33-33-33.1
+DEBUG:t4_controller:[Topology] adding link {dpid1 11-11-11-11-11-11, port1 4} -> {dpid2 33-33-33-33-33-33, port2 1}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+Hosts:
+None
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 33:33:00:00:00:16), type: others
+INFO:openflow.discovery:link detected: 22-22-22-22-22-22.1 -> 11-11-11-11-11-11.3
+DEBUG:t4_controller:[Topology] adding link {dpid1 22-22-22-22-22-22, port1 1} -> {dpid2 11-11-11-11-11-11, port2 3}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1)
+Hosts:
+None
+INFO:openflow.discovery:link detected: 22-22-22-22-22-22.2 -> 33-33-33-33-33-33.2
+DEBUG:t4_controller:[Topology] adding link {dpid1 22-22-22-22-22-22, port1 2} -> {dpid2 33-33-33-33-33-33, port2 2}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+Hosts:
+None
+INFO:openflow.discovery:link detected: 33-33-33-33-33-33.1 -> 11-11-11-11-11-11.4
+DEBUG:t4_controller:[Topology] adding link {dpid1 33-33-33-33-33-33, port1 1} -> {dpid2 11-11-11-11-11-11, port2 4}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 11-11-11-11-11-11|0 (1)
+Hosts:
+None
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 33:33:00:00:00:02), type: others
+INFO:openflow.discovery:link detected: 33-33-33-33-33-33.2 -> 22-22-22-22-22-22.2
+DEBUG:t4_controller:[Topology] adding link {dpid1 33-33-33-33-33-33, port1 2} -> {dpid2 22-22-22-22-22-22, port2 2}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 11-11-11-11-11-11|0 (1) 22-22-22-22-22-22|0 (2)
+Hosts:
+None
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 33:33:00:00:00:02), type: others
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.2?
+DEBUG:t4_controller:[Topology] adding host (ip 10.0.0.1, mac 00:00:00:00:00:01) attached to switch 11-11-11-11-11-11 port 1
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Added new host directly linked to me: 10.0.0.1 (00:00:00:00:00:01) through port 1
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 11-11-11-11-11-11|0 (1) 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.1 (00:00:00:00:00:01) -> 11-11-11-11-11-11 (1)
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.1?
+DEBUG:t4_controller:[Topology] adding host (ip 10.0.0.2, mac 00:00:00:00:00:02) attached to switch 11-11-11-11-11-11 port 2
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Added new host directly linked to me: 10.0.0.2 (00:00:00:00:00:02) through port 2
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 11-11-11-11-11-11|0 (1) 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.1 (00:00:00:00:00:01) -> 11-11-11-11-11-11 (1)
+10.0.0.2 (00:00:00:00:00:02) -> 11-11-11-11-11-11 (2)
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:02: 10.0.0.1 is at 00:00:00:00:00:01
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.2 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:01: 10.0.0.2 is at 00:00:00:00:00:02
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.1 to 10.0.0.2, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.1?
+DEBUG:t4_controller:[Topology] adding host (ip 10.0.0.3, mac 00:00:00:00:00:03) attached to switch 22-22-22-22-22-22 port 3
+DEBUG:t4_controller:[Topology] Top switch found: 33-33-33-33-33-33|0
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Added new host directly linked to me: 10.0.0.3 (00:00:00:00:00:03) through port 3
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 11-11-11-11-11-11|0 (1) 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.1 (00:00:00:00:00:01) -> 11-11-11-11-11-11 (1)
+10.0.0.3 (00:00:00:00:00:03) -> 22-22-22-22-22-22 (3)
+10.0.0.2 (00:00:00:00:00:02) -> 11-11-11-11-11-11 (2)
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:03: 10.0.0.1 is at 00:00:00:00:00:01
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.3 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.3 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:01: 10.0.0.3 is at 00:00:00:00:00:03
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.1 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.1 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:03: 10.0.0.2 is at 00:00:00:00:00:02
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.3 to 10.0.0.2, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.3 to 10.0.0.2, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:02: 10.0.0.3 is at 00:00:00:00:00:03
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.2 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:02 (1) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.2 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.4 (00:00:00:00:00:04), who has 10.0.0.1?
+DEBUG:t4_controller:[Topology] adding host (ip 10.0.0.4, mac 00:00:00:00:00:04) attached to switch 22-22-22-22-22-22 port 4
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Added new host directly linked to me: 10.0.0.4 (00:00:00:00:00:04) through port 4
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 11-11-11-11-11-11|0 (1) 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.4 (00:00:00:00:00:04) -> 22-22-22-22-22-22 (4)
+10.0.0.1 (00:00:00:00:00:01) -> 11-11-11-11-11-11 (1)
+10.0.0.3 (00:00:00:00:00:03) -> 22-22-22-22-22-22 (3)
+10.0.0.2 (00:00:00:00:00:02) -> 11-11-11-11-11-11 (2)
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:04: 10.0.0.1 is at 00:00:00:00:00:01
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.4 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:04 (3) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.4 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:01: 10.0.0.4 is at 00:00:00:00:00:04
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[get_next_hop] Implementing special policy (10.0.0.1 -SW3-> 10.0.0.4) on 11-11-11-11-11-11|0 (4) (2)
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.1 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] IP packet from 10.0.0.1 to 10.0.0.4, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:01 (2) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.1 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.4 (00:00:00:00:00:04), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:04: 10.0.0.2 is at 00:00:00:00:00:02
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.4 to 10.0.0.2, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:04 (3) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.4 to 10.0.0.2, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:02: 10.0.0.4 is at 00:00:00:00:00:04
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[get_next_hop] Implementing special policy (10.0.0.2 -SW3-> 10.0.0.4) on 11-11-11-11-11-11|0 (4) (2)
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.2 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Got new packet (00:00:00:00:00:02 (1) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] IP packet from 10.0.0.2 to 10.0.0.4, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.2 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.4 (00:00:00:00:00:04), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:04: 10.0.0.3 is at 00:00:00:00:00:03
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.4 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> ff:ff:ff:ff:ff:ff), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:03: 10.0.0.4 is at 00:00:00:00:00:04
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.3 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.1 to 10.0.0.2, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.2 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.1 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.1 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.3 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.3 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[get_next_hop] Implementing special policy (10.0.0.1 -SW3-> 10.0.0.4) on 11-11-11-11-11-11|0 (4) (2)
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.1 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] IP packet from 10.0.0.1 to 10.0.0.4, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:01 (2) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.1 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.4 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:04 (3) -> 00:00:00:00:00:01), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.4 to 10.0.0.1, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.2 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:02 (1) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.2 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.3 to 10.0.0.2, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.3 to 10.0.0.2, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[get_next_hop] Implementing special policy (10.0.0.2 -SW3-> 10.0.0.4) on 11-11-11-11-11-11|0 (4) (2)
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.2 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Got new packet (00:00:00:00:00:02 (1) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] IP packet from 10.0.0.2 to 10.0.0.4, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 33-33-33-33-33-33|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 33-33-33-33-33-33|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.2 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.4 to 10.0.0.2, protocol: ICMP, next hop port: 1
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 1
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:04 (3) -> 00:00:00:00:00:02), type: IP
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] IP packet from 10.0.0.4 to 10.0.0.2, protocol: ICMP, next hop port: 2
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Redirecting IP packet to next hop out of port 2
+INFO:t4_controller:[Switch 11-11-11-11-11-11|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:04), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.3 to 10.0.0.4, protocol: ICMP, next hop port: 4
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 4
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:03), type: IP
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] IP packet from 10.0.0.4 to 10.0.0.3, protocol: ICMP, next hop port: 3
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Redirecting IP packet to next hop out of port 3
+INFO:t4_controller:[Switch 22-22-22-22-22-22|0] Installing flow
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:02), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:01: 10.0.0.2 is at 00:00:00:00:00:02
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:01), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.1?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:02: 10.0.0.1 is at 00:00:00:00:00:01
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:03), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:01: 10.0.0.3 is at 00:00:00:00:00:03
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:01 (1) -> 00:00:00:00:00:04), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.1 (00:00:00:00:00:01), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:01: 10.0.0.4 is at 00:00:00:00:00:04
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:03), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:02: 10.0.0.3 is at 00:00:00:00:00:03
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:01), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.1?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:03: 10.0.0.1 is at 00:00:00:00:00:01
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:02), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:03: 10.0.0.2 is at 00:00:00:00:00:02
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:01), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.4 (00:00:00:00:00:04), who has 10.0.0.1?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:04: 10.0.0.1 is at 00:00:00:00:00:01
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Got new packet (00:00:00:00:00:02 (2) -> 00:00:00:00:00:04), type: ARP
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] ARP REQUEST: I am 10.0.0.2 (00:00:00:00:00:02), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 11-11-11-11-11-11|0] Answering ARP from 00:00:00:00:00:02: 10.0.0.4 is at 00:00:00:00:00:04
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:02), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.4 (00:00:00:00:00:04), who has 10.0.0.2?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:04: 10.0.0.2 is at 00:00:00:00:00:02
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:04 (4) -> 00:00:00:00:00:03), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.4 (00:00:00:00:00:04), who has 10.0.0.3?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:04: 10.0.0.3 is at 00:00:00:00:00:03
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Got new packet (00:00:00:00:00:03 (3) -> 00:00:00:00:00:04), type: ARP
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] ARP REQUEST: I am 10.0.0.3 (00:00:00:00:00:03), who has 10.0.0.4?
+DEBUG:t4_controller:[Switch 22-22-22-22-22-22|0] Answering ARP from 00:00:00:00:00:03: 10.0.0.4 is at 00:00:00:00:00:04
+INFO:core:Going down...
+INFO:openflow.of_01:[11-11-11-11-11-11 2] disconnected
+DEBUG:t4_controller:[Topology] removing link {dpid1 33-33-33-33-33-33, port1 1} -> {dpid2 11-11-11-11-11-11, port2 4}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 11-11-11-11-11-11|0 (1) 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.4 (00:00:00:00:00:04) -> 22-22-22-22-22-22 (4)
+10.0.0.1 (00:00:00:00:00:01) -> 11-11-11-11-11-11 (1)
+10.0.0.3 (00:00:00:00:00:03) -> 22-22-22-22-22-22 (3)
+10.0.0.2 (00:00:00:00:00:02) -> 11-11-11-11-11-11 (2)
+DEBUG:t4_controller:[Topology] removing link {dpid1 22-22-22-22-22-22, port1 1} -> {dpid2 11-11-11-11-11-11, port2 3}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 22-22-22-22-22-22|0 (3) 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.4 (00:00:00:00:00:04) -> 22-22-22-22-22-22 (4)
+10.0.0.1 (00:00:00:00:00:01) -> 11-11-11-11-11-11 (1)
+10.0.0.3 (00:00:00:00:00:03) -> 22-22-22-22-22-22 (3)
+10.0.0.2 (00:00:00:00:00:02) -> 11-11-11-11-11-11 (2)
+DEBUG:t4_controller:[Topology] removing link {dpid1 11-11-11-11-11-11, port1 3} -> {dpid2 22-22-22-22-22-22, port2 1}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+11-11-11-11-11-11|0 -> 33-33-33-33-33-33|0 (4)
+22-22-22-22-22-22|0 -> 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.4 (00:00:00:00:00:04) -> 22-22-22-22-22-22 (4)
+10.0.0.1 (00:00:00:00:00:01) -> 11-11-11-11-11-11 (1)
+10.0.0.3 (00:00:00:00:00:03) -> 22-22-22-22-22-22 (3)
+10.0.0.2 (00:00:00:00:00:02) -> 11-11-11-11-11-11 (2)
+DEBUG:t4_controller:[Topology] removing link {dpid1 11-11-11-11-11-11, port1 4} -> {dpid2 33-33-33-33-33-33, port2 1}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+22-22-22-22-22-22|0 -> 33-33-33-33-33-33|0 (2)
+33-33-33-33-33-33|0 -> 22-22-22-22-22-22|0 (2)
+Hosts:
+10.0.0.4 (00:00:00:00:00:04) -> 22-22-22-22-22-22 (4)
+10.0.0.3 (00:00:00:00:00:03) -> 22-22-22-22-22-22 (3)
+INFO:openflow.of_01:[22-22-22-22-22-22 3] disconnected
+DEBUG:t4_controller:[Topology] removing link {dpid1 33-33-33-33-33-33, port1 2} -> {dpid2 22-22-22-22-22-22, port2 2}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+22-22-22-22-22-22|0 -> 33-33-33-33-33-33|0 (2)
+Hosts:
+10.0.0.4 (00:00:00:00:00:04) -> 22-22-22-22-22-22 (4)
+10.0.0.3 (00:00:00:00:00:03) -> 22-22-22-22-22-22 (3)
+DEBUG:t4_controller:[Topology] removing link {dpid1 22-22-22-22-22-22, port1 2} -> {dpid2 33-33-33-33-33-33, port2 2}
+DEBUG:t4_controller:[_handle_LinkEvent] Updated topology
+Switches:
+None
+Hosts:
+None
+INFO:openflow.of_01:[33-33-33-33-33-33 4] disconnected
+INFO:core:Down.

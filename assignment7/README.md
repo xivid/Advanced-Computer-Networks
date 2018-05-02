@@ -6,7 +6,7 @@ The OpenFlow assignment.
 
 1. Launch POX controller.
 
-    First, please copy all controller scripts (./\*Controller/t\*_controller.py) into `~/pox/ext`.
+    First, please copy all controller scripts (./\*Controller/t\*_controller.py) into `~/pox/ext`. Note that the supported Python version is 2.7.
     
     ```
     # Assuming working on the mininet VM, the current directory is ~/pox.
