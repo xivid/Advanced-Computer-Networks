@@ -52,7 +52,7 @@ Whenever a new packet comes into a switch, the controller records the mapping fr
  
     We run `iperf h1 h2` to represent the throughput between two hosts connected to the same switch, and `iperf h1 h5` to represent the throughput between hosts connected to different switches. We repeat each experiment by three times. The output log for this command is in `output/iperf.log`. 
 
-    The results are in `Mbits`, which is by orders of magnitues lower than what we will see on the controllers installing MicroFlow rules, because all traffic need to go through the controller, which is in user space (much slower than in kernel space).
+    The results are in `Mbits/sec`, which is by orders of magnitues lower than what we will see on the controllers installing MicroFlow rules, because all traffic need to go through the controller, which is in user space (much slower than in kernel space).
 
     The results also show that the average TCP bandwidth between h1 and h2 (`[24.8 Mbits/sec, 27.0 Mbits/sec]`) is roughly three times that between h1 and h5 (`[7.12 Mbits/sec, 7.98 Mbits/sec]`). This is because the latter's path is two hops longer than the former's path, taking the saturated controller more time to redirect the traffic. The bandwidth between h1 and h2 is notably higher than that with the hub controller, because there is no more flooding, mitigating the bottlenck on the controller.
 
