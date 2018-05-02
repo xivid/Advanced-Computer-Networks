@@ -1,0 +1,3 @@
+mininet> iperf h1 h2
+*** Iperf: testing TCP bandwidth between h1 and h2
+*** Results: ['30.1 Gbits/sec', '30.1 Gbits/sec']
