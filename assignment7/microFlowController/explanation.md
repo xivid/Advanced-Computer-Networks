@@ -30,7 +30,7 @@ In this way, both unnecessary floodings and traversing the controller are avoide
 
 1. On `h1 ping -c 100 h2`:
 
-   By setting the hard timeout of microflow rules to be 20 seconds, and with a ping interval of 1 second, the ping latencies follows a pattern with a period of 20 as expected, where the first latency is subject to the same distribution with that in the learning switch and the hub, while all the rest 19 latencies are orders of magnitude lower. The output log for this command is in `output/h1_ping_h2.log`. The periodic pattern is clearly shown in the plot `plots/h1_ping_h2.png`.
+    By setting the hard timeout of microflow rules to be 20 seconds, and with a ping interval of 1 second, the ping latencies follows a pattern with a period of 20 as expected, where the first latency is subject to the same distribution with that in the learning switch and the hub (i.e. between a few milliseconds and tens of milliseconds), while all the rest 19 latencies are orders of magnitude lower. The output log for this command is in `output/h1_ping_h2.log`. The periodic pattern is clearly shown in the plot `plots/h1_ping_h2.png`.
 
     The latency is much lower than that with the learning switch and hub controller. It is because the major part of the latency, which was caused by going through the controller, has been eliminated. The ping traffic only need to travel via switches.
     
