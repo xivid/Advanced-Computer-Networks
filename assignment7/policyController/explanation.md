@@ -62,4 +62,5 @@ It is worth mentioning that the controller are programmed to reply to ARP reques
  
     We repeat each experiment by three times. The output logs are `output/h1_ping_h3.log` and `output/h1_ping_h4.log`. The latencies of the two with respect to sequence numbers are plotted on the same figure `plots/h1_ping_h3_h4.png`.
 
-    Although `h1 -> h4` goes one more hop than `h1 -> h3`, the ping latencies are almost the same. It may result from the extremely short travelling time of one hop as well as the limited accuracy of Linux `ping`.
+    Although `h1 -> h4` goes one more hop than `h1 -> h3`, the ping latencies are almost the same. It may result from the extremely short travelling time of one hop as well as the limited accuracy of Linux `ping`. The former only takes a little bit more time when the microflow rules are expired and packets are redirected to the controller (shown by the bumps in the figure).
+
