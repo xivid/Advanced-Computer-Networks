@@ -30,7 +30,7 @@ The hub controller does not learn the topology at all. It just floods all traffi
 
     Although the standard deviation is a bit high and the latency is not very stable, it should be explained as normal fluctuations of flooding.
 
-    All hosts and all switches observe the ping traffic because of flooding, as is shown in the first half of tcpdump results `output/h*_tcpdump.log` (use `sudo tcpdump -ttttnnr [filename]` to read) and controller logs `output/controller.log` (first half).
+    All hosts and all switches observe the ping traffic because of flooding, as is shown in the first half of tcpdump results `output/h*_tcpdump.log` (extracted by `tcpdump -XX -n -i [interface] -w [filename]`, use `sudo tcpdump -ttttnnr [filename]` to read) and controller logs `output/controller.log` (first half).
 
 2. On `h1 ping -c 100 h5`:
 
@@ -38,7 +38,7 @@ The hub controller does not learn the topology at all. It just floods all traffi
 
     The latency is almost the same as the previous result. This is because the latency is dominated by communication with controller. The tiny impact on latency by a few more hops is therefore hidden.
 
-    All hosts and all switches observe the ping traffic because of flooding, as is shown in the second half of tcpdump results `output/h*_tcpdump.log` (use `sudo tcpdump -ttttnnr [filename]` to read) and controller logs `output/controller.log` (second half).
+    All hosts and all switches observe the ping traffic because of flooding, as is shown in the second half of tcpdump results `output/h*_tcpdump.log` (extracted by `tcpdump -XX -n -i [interface] -w [filename]`, use `sudo tcpdump -ttttnnr [filename]` to read) and controller logs `output/controller.log` (second half).
 
 3. On `pingall`:
  
