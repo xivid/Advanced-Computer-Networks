@@ -22,7 +22,7 @@ Following the [openflow-tutorial](https://github.com/mininet/openflow-tutorial/w
 
 The custom topology is a subclass of mininet.topo.Topo. Hosts, switches and links are added by calling methods `addHost()`, `addSwitch()` and `addLink()`.
 
-Host x is statically assigned with IP address 10.0.0.x/24 to make it possible to express the policies. Switch y is statically assigned with DPID "0000yyyyyyyyyyyy" to make it easy to be recognised with naked eyes, but the controller implementation *does not* rely on this information at all.
+Host __x__ is statically assigned with IP address 10.0.0.__x__/24 to make it possible to express the policies. Switch __y__ is statically assigned with DPID "0000yyyyyyyyyyyy" to make it more recognisable, but the controller implementation *does not* rely on this information at all.
 
 All names ("h\*", "s\*") are lowercase rather than the uppercases given in the assignment sheet, in order to save my keystrokes.
 
