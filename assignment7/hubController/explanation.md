@@ -52,5 +52,5 @@ The hub controller does not learn the topology at all. It just floods all traffi
 
     The results are in `Mbits`, which is by orders of magnitues lower than what we will see on the controllers installing MicroFlow rules, because all traffic need to go through the controller, which is in user space (much slower than in kernel space).
 
-    The results also show that the TCP bandwidth between h1 and h2 is roughly two times that between h1 and h5. This is because the latter's path is two hops longer than the former's path. Apparently, traversing additional switches cost additional time.
+    The results also show that the average TCP bandwidth between h1 and h2 (`[8.72 Mbits/sec, 9.75 Mbits/sec]`) is roughly two times that between h1 and h5 (`[16.0 Mbits/sec, 18.3 Mbits/sec]`). This is because the latter's path is two hops longer than the former's path, costing additional time.
 
