@@ -50,7 +50,7 @@ The hub controller does not learn the topology at all. It just floods all traffi
  
     We run `iperf h1 h2` to represent the throughput between two hosts connected to the same switch, and `iperf h1 h5` to represent the throughput between hosts connected to different switches. We repeat each experiment by three times. The output log for this command is in `output/iperf.log`. 
 
-    The results are in `Mbits/sec`, which is by orders of magnitues lower than what we will see on the controllers installing MicroFlow rules, because all traffic need to go through the controller, which is in user space (much slower than in kernel space).
+    The results are in `Mbits/sec`, which is by orders of magnitude lower than what we will see on the controllers installing MicroFlow rules, because all traffic need to go through the controller, which is in user space (much slower than in kernel space).
 
     The results also show that the average TCP bandwidth between h1 and h2 (`[16.0 Mbits/sec, 18.3 Mbits/sec]`) is roughly two times that between h1 and h5 (`[8.72 Mbits/sec, 9.75 Mbits/sec]`). This is because the latter's path is two hops longer than the former's path, and the over-saturated controller which has become the bottleneck may take more time to redirect packets finally to h5.
 
