@@ -1,6 +1,12 @@
 # Policy Controller
 
-The MAC learning controller in previous section is modified to install microflow rules in the OpenFlow switch reactively to incoming traffic. Thus, the controller will only receive packets for which there are no matching microflow rules in the switch.
+On Custom Topology II:
+
+For all traffic from H1 to H4 or from H2 to H4, they must traverse switch 3.
+
+For all other traffic (including from H4 to H1 or H2), the default paths will be the shortest paths.
+
+Although installing microflow rules is not required, it is implemented to improve the performance.
 
 ## Creating Topology
 
