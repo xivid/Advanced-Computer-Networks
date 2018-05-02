@@ -1,4 +1,4 @@
-17720
+mininet> h1 ping -c 100 h3 > ~/zhiyang/assignment7/policyController/output/h1_ping_h3.log
 PING 10.0.0.3 (10.0.0.3) 56(84) bytes of data.
 64 bytes from 10.0.0.3: icmp_seq=1 ttl=64 time=47.7 ms
 64 bytes from 10.0.0.3: icmp_seq=2 ttl=64 time=0.248 ms
