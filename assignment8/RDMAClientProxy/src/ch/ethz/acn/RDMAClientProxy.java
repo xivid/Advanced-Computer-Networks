@@ -46,7 +46,7 @@ public class RDMAClientProxy {
                     System.out.println(clientSocket + " says: " + input);
                     String[] tokens = input.split("\\s+");
                     if (tokens.length > 1 && tokens[0].equals("GET") && tokens[1].startsWith("http://www.rdmawebpage.com")) {
-                        out.println("HTTP/1.1 200 OK");  // TODO forward to RDMA server
+                        out.println("HTTP/1.1 200 OK\n\n<h1>Welcome to the RDMA world</h1>");  // TODO forward to RDMA server
                     } else {
                         out.println(info);
                     }
