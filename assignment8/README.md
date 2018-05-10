@@ -2,14 +2,13 @@
 
 The RDMA assignment.
 
-## How the application works
+## How it works
 
 TBA
 
 ---
-Zhifei Yang (Legi: 17941998)
-
-Computer Science MSc Student
+Jack Clark
+Zhifei Yang
 
 ETH Zürich
 
