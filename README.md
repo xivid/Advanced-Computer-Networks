@@ -9,7 +9,7 @@ Introduction to OpenFlow. See `README.md` in `./assignment7".
 
 ## Assignment 8
 
-TBA
+Introduction to RDMA Programming. See `README.md` in `./assignment8`.
 
 
 ---
