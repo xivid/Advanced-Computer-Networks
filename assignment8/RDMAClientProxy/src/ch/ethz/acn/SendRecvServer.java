@@ -43,26 +43,26 @@ public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.Custom
 	public SendRecvServer.CustomServerEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
 		return new SendRecvServer.CustomServerEndpoint(endpointGroup, idPriv, serverSide);
 	}	
-	
+
+	private RdmaServerEndpoint<SendRecvServer.CustomServerEndpoint> serverEndpoint;
+
 	public void run() throws Exception {
 		//create a EndpointGroup. The RdmaActiveEndpointGroup contains CQ processing and delivers CQ event to the endpoint.dispatchCqEvent() method.
 		endpointGroup = new RdmaActiveEndpointGroup<SendRecvServer.CustomServerEndpoint>(1000, false, 128, 4, 128);
 		endpointGroup.init(this);
 		//create a server endpoint
-		RdmaServerEndpoint<SendRecvServer.CustomServerEndpoint> serverEndpoint = endpointGroup.createServerEndpoint();		
+		serverEndpoint = endpointGroup.createServerEndpoint();
 
 		//we can call bind on a server endpoint, just like we do with sockets
 		URI uri = URI.create("rdma://" + ipAddress + ":" + 1919);
 		serverEndpoint.bind(uri);
 		System.out.println("SimpleServer::servers bound to address " + uri.toString());
-		
-		//we can accept new connections
-		SendRecvServer.CustomServerEndpoint clientEndpoint = serverEndpoint.accept();
-		//we have previously passed our own endpoint factory to the group, therefore new endpoints will be of type CustomServerEndpoint
-		System.out.println("SimpleServer::client connection accepted");
 
-		for (int i = 1; i <= 1; ++i) {
-			System.out.println("Test " + i);
+		while (true) {
+			//we can accept new connections
+			SendRecvServer.CustomServerEndpoint clientEndpoint = serverEndpoint.accept();
+			//we have previously passed our own endpoint factory to the group, therefore new endpoints will be of type CustomServerEndpoint
+			System.out.println("SimpleServer::client connection accepted");
 
 			//in our custom endpoints we make sure CQ events get stored in a queue, we now query that queue for new CQ events.
 			//in this case a new CQ event means we have received data, i.e., a message from the client.
@@ -84,7 +84,7 @@ public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.Custom
 					if (tokens[1].equals("add") && tokens.length > 3) {
 						response = String.valueOf(Integer.valueOf(tokens[2]) + Integer.valueOf(tokens[3]));
 					}
-				} else if (tokens[0].equals("GET") && tokens.length > 1 && tokens[1].equals("http://www.rdmawebpage.com")) {
+				} else if (tokens[0].equals("GET") && tokens.length > 1 && tokens[1].startsWith("http://www.rdmawebpage.com")) {  // TODO: update rule
 					response = "HTTP/1.1 200 OK\n\n<h1>Welcome RDMA</h1>";
 				}
 			}
@@ -96,11 +96,14 @@ public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.Custom
 			//when receiving the CQ event we know the message has been sent
 			clientEndpoint.getWcEvents().take();
 			System.out.println("SimpleServer::message sent");
-		}
 
+			clientEndpoint.close();
+			System.out.println("client endpoint closed");
+		}
+	}
+
+	public void close() throws Exception {
 		//close everything
-		clientEndpoint.close();
-		System.out.println("client endpoint closed");
 		serverEndpoint.close();
 		System.out.println("server endpoint closed");
 		endpointGroup.close();
@@ -224,7 +227,16 @@ public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.Custom
 			System.out.println("SimpleServer::initiated recv");
 			this.postRecv(wrList_recv).execute().free();		
 		}
-		
+
+		// Added by Zhifei Yang: deregister memory regions when closing the endpoint
+		@Override
+		public void close() throws IOException, InterruptedException {
+			super.close();
+			for (int i = 0; i < buffercount; i++){
+				deregisterMemory(mrlist[i]);
+			}
+		}
+
 		public void dispatchCqEvent(IbvWC wc) throws IOException {
 			wcEvents.add(wc);
 		}

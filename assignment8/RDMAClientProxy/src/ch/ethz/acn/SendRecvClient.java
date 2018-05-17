@@ -39,6 +39,9 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 	private String ipAddress;
 	RdmaActiveEndpointGroup<SendRecvClient.CustomClientEndpoint> endpointGroup;
 
+
+	public SendRecvClient(String ipAddress) { this.ipAddress = ipAddress; }
+
 	public SendRecvClient.CustomClientEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
 		return new CustomClientEndpoint(endpointGroup, idPriv, serverSide);
 	}
@@ -47,49 +50,54 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 		//create a EndpointGroup. The RdmaActiveEndpointGroup contains CQ processing and delivers CQ event to the endpoint.dispatchCqEvent() method.
 		endpointGroup = new RdmaActiveEndpointGroup<SendRecvClient.CustomClientEndpoint>(1000, false, 128, 4, 128);
 		endpointGroup.init(this);
+	}
+
+	public String request(String request) throws Exception {
 		//we have passed our own endpoint factory to the group, therefore new endpoints will be of type CustomClientEndpoint
 		//let's create a new client endpoint
 		SendRecvClient.CustomClientEndpoint endpoint = endpointGroup.createEndpoint();
-		
+
 		//connect to the server
 		endpoint.connect(URI.create("rdma://" + ipAddress + ":" + 1919));
 		System.out.println("SimpleClient::client channel set up ");
 
-		for (int i = 1; i <= 1; ++i) {
-			System.out.println("Test " + i);
-			//in our custom endpoints we have prepared (memory registration and work request creation) some memory
-			//buffers beforehand.
-			//let's send one of those buffers out using a send operation
-			ByteBuffer sendBuf = endpoint.getSendBuf();
-			System.out.print("Input a message to be sent: ");
-			sendBuf.asCharBuffer().put(new Scanner(System.in).nextLine());
-			sendBuf.clear();
-			SVCPostSend postSend = endpoint.postSend(endpoint.getWrList_send());
-			postSend.getWrMod(0).setWr_id(4444 + i);
-			postSend.execute().free();
-			//in our custom endpoints we make sure CQ events get stored in a queue, we now query that queue for new CQ events.
-			//in this case a new CQ event means we have sent data, i.e., the message has been sent to the server
-			IbvWC wc = endpoint.getWcEvents().take();
-			System.out.println("SimpleClient::message sent, wr_id " + wc.getWr_id());
-			//in this case a new CQ event means we have received data
-			endpoint.getWcEvents().take();
-			System.out.println("SimpleClient::message received");
+		//in our custom endpoints we have prepared (memory registration and work request creation) some memory
+		//buffers beforehand.
+		//let's send one of those buffers out using a send operation
+		ByteBuffer sendBuf = endpoint.getSendBuf();
+		System.out.print("SimpleClient::message to be sent: [" + request + "], length " + request.length());
+		sendBuf.asCharBuffer().put(request);
+		sendBuf.clear();
+		SVCPostSend postSend = endpoint.postSend(endpoint.getWrList_send());
+		postSend.getWrMod(0).setWr_id(4444);
+		postSend.execute().free();
+		//in our custom endpoints we make sure CQ events get stored in a queue, we now query that queue for new CQ events.
+		//in this case a new CQ event means we have sent data, i.e., the message has been sent to the server
+		IbvWC wc = endpoint.getWcEvents().take();
+		System.out.println("SimpleClient::message sent, wr_id " + wc.getWr_id());
+		//in this case a new CQ event means we have received data
+		endpoint.getWcEvents().take();
+		System.out.println("SimpleClient::message received");
 
-			//the response should be received in this buffer, let's print it
-			ByteBuffer recvBuf = endpoint.getRecvBuf();
-			recvBuf.clear();
-			String response = recvBuf.asCharBuffer().toString();
-			System.out.println("Message from the server: [" + response + "], length " + response.length());
-		}
+		//the response should be received in this buffer, let's print it
+		ByteBuffer recvBuf = endpoint.getRecvBuf();
+		recvBuf.clear();
+		String response = recvBuf.asCharBuffer().toString();
+		System.out.println("SimpleClient::message from the server: [" + response + "], length " + response.length());
 
-		//close everything
+		// close the customClientEndpoint
 		endpoint.close();
-		System.out.println("endpoint closed");
+
+		return response;
+	}
+
+	public void close() throws Exception {
+		//close everything
 		endpointGroup.close();
 		System.out.println("group closed");
 //		System.exit(0);
 	}
-	
+
 	public void launch(String[] args) throws Exception {
 		String[] _args = args;
 		if (args.length < 1) {
@@ -115,7 +123,7 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 	}
 	
 	public static void main(String[] args) throws Exception { 
-		SendRecvClient simpleClient = new SendRecvClient();
+		SendRecvClient simpleClient = new SendRecvClient(null);
 		simpleClient.launch(args);		
 	}		
 	
@@ -214,7 +222,16 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 			System.out.println("SimpleClient::initiated recv");
 			this.postRecv(wrList_recv).execute().free();		
 		}
-		
+
+		// Added by Zhifei Yang: deregister memory regions when closing the endpoint
+		@Override
+		public void close() throws IOException, InterruptedException {
+			super.close();
+			for (int i = 0; i < buffercount; i++){
+				deregisterMemory(mrlist[i]);
+			}
+		}
+
 		public void dispatchCqEvent(IbvWC wc) throws IOException {
 			wcEvents.add(wc);
 		}
