@@ -94,18 +94,6 @@ public class RDMAClientProxy {
                         String response = rdmaClient.request(input);
                         System.out.println(clientSocket + " rdma server response: " + response);
                         clientOut.println(response);
-                        /* if (tokens[1].equals("http://www.rdmawebpage.com") ||
-                                tokens[1].equals("http://www.rdmawebpage.com/") ||
-                                tokens[1].equals("http://www.rdmawebpage.com/index.html")) {
-                            clientOut.println("HTTP/1.1 200 OK\n\n<h1>Welcome to the RDMA world</h1><img src=\"network.png\" alt=\"RDMA Read Image Missing!\">");  // TODO forward to RDMA server
-                        }
-                        else if (tokens[1].equals("http://www.rdmawebpage.com/network.png")) {
-                            clientOut.println("HTTP/1.1 200 OK\nContent-Type: image/png\n\n" + png + "\n");
-                        }
-                        else {
-                            clientOut.println(msg404);
-                        } */
-
                     } else {
                         System.out.println(clientSocket + " handling at proxy");
                         clientOut.println(msg404);
