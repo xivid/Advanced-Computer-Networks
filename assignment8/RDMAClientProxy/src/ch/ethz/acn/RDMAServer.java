@@ -21,7 +21,6 @@
 
 package ch.ethz.acn;
 
-import ch.ethz.acn.SendRecvClient;
 import com.ibm.disni.rdma.RdmaActiveEndpoint;
 import com.ibm.disni.rdma.RdmaActiveEndpointGroup;
 import com.ibm.disni.rdma.RdmaEndpointFactory;
@@ -32,23 +31,22 @@ import com.ibm.disni.util.GetOpt;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.CustomServerEndpoint> {
+public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEndpoint> {
 	private String ipAddress;
-	RdmaActiveEndpointGroup<SendRecvServer.CustomServerEndpoint> endpointGroup;
+	RdmaActiveEndpointGroup<RDMAServer.CustomServerEndpoint> endpointGroup;
 	
-	public SendRecvServer.CustomServerEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
-		return new SendRecvServer.CustomServerEndpoint(endpointGroup, idPriv, serverSide);
+	public RDMAServer.CustomServerEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
+		return new RDMAServer.CustomServerEndpoint(endpointGroup, idPriv, serverSide);
 	}	
 
-	private RdmaServerEndpoint<SendRecvServer.CustomServerEndpoint> serverEndpoint;
+	private RdmaServerEndpoint<RDMAServer.CustomServerEndpoint> serverEndpoint;
 
 	public void run() throws Exception {
 		//create a EndpointGroup. The RdmaActiveEndpointGroup contains CQ processing and delivers CQ event to the endpoint.dispatchCqEvent() method.
-		endpointGroup = new RdmaActiveEndpointGroup<SendRecvServer.CustomServerEndpoint>(1000, false, 128, 4, 128);
+		endpointGroup = new RdmaActiveEndpointGroup<RDMAServer.CustomServerEndpoint>(1000, false, 128, 4, 128);
 		endpointGroup.init(this);
 		//create a server endpoint
 		serverEndpoint = endpointGroup.createServerEndpoint();
@@ -60,7 +58,7 @@ public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.Custom
 
 		while (true) {
 			//we can accept new connections
-			SendRecvServer.CustomServerEndpoint clientEndpoint = serverEndpoint.accept();
+			RDMAServer.CustomServerEndpoint clientEndpoint = serverEndpoint.accept();
 			//we have previously passed our own endpoint factory to the group, therefore new endpoints will be of type CustomServerEndpoint
 			System.out.println("SimpleServer::client connection accepted");
 
@@ -115,7 +113,7 @@ public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.Custom
 		String[] _args = args;
 		if (args.length < 1) {
 			System.exit(0);
-		} else if (args[0].equals(SendRecvClient.class.getCanonicalName())) {
+		} else if (args[0].equals(RDMAClient.class.getCanonicalName())) {
 			_args = new String[args.length - 1];
 			for (int i = 0; i < _args.length; i++) {
 				_args[i] = args[i + 1];
@@ -136,7 +134,7 @@ public class SendRecvServer implements RdmaEndpointFactory<SendRecvServer.Custom
 	}
 	
 	public static void main(String[] args) throws Exception { 
-		SendRecvServer simpleServer = new SendRecvServer();
+		RDMAServer simpleServer = new RDMAServer();
 		simpleServer.launch(args);		
 	}	
 	

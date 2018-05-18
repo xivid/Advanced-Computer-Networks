@@ -3,7 +3,6 @@ package ch.ethz.acn;
 import com.ibm.disni.util.GetOpt;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -19,11 +18,10 @@ public class RDMAClientProxy {
             "  <title>Error 404 (Not Found)</title>\n" +
             "  <h1>404 Not Found</h1>\n" +
             "  <p>The requested URL was not found.</p>";
-    private static final String png = "\u5089\u474e\u0a0d\u0a1a\u0000\u0d00\u4849\u5244\u0000\u0100\u0000\u0100\u0608\u0000\u1f00\uc415\u0089\u0000\u490a\u4144\u7854\u639c\u0100\u0000\u0005\u0d01\u2d0a\u00b4\u0000\u4900\u4e45\uae44\u6042\u8200";
 
     private String ipAddress;
 
-    private SendRecvClient rdmaClient;
+    private RDMAClient rdmaClient;
 
     public RDMAClientProxy(String ipAddress) { this.ipAddress = ipAddress; }
 
@@ -32,7 +30,7 @@ public class RDMAClientProxy {
         String[] _args = args;
         if (args.length < 1) {
             System.exit(0);
-        } else if (args[0].equals(SendRecvClient.class.getCanonicalName())) {
+        } else if (args[0].equals(RDMAClient.class.getCanonicalName())) {
             _args = new String[args.length - 1];
             for (int i = 0; i < _args.length; i++) {
                 _args[i] = args[i + 1];
@@ -63,10 +61,16 @@ public class RDMAClientProxy {
 
         System.out.println("Starting HTTP proxy on port 3721");
         initHTTPProxy();
+
+        try {
+            rdmaClient.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initRDMAClient() {
-        rdmaClient = new SendRecvClient(ipAddress);
+        rdmaClient = new RDMAClient(ipAddress);
         try {
             rdmaClient.run();
         } catch (Exception e) {

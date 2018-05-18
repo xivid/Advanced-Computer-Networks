@@ -25,47 +25,45 @@ import com.ibm.disni.rdma.RdmaActiveEndpoint;
 import com.ibm.disni.rdma.RdmaActiveEndpointGroup;
 import com.ibm.disni.rdma.RdmaEndpointFactory;
 import com.ibm.disni.rdma.verbs.*;
-import com.ibm.disni.util.GetOpt;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
-import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 
 
-public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.CustomClientEndpoint> {
+public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEndpoint> {
 	private String ipAddress;
-	RdmaActiveEndpointGroup<SendRecvClient.CustomClientEndpoint> endpointGroup;
+	RdmaActiveEndpointGroup<RDMAClient.CustomClientEndpoint> endpointGroup;
 
 
-	public SendRecvClient(String ipAddress) { this.ipAddress = ipAddress; }
+	public RDMAClient(String ipAddress) { this.ipAddress = ipAddress; }
 
-	public SendRecvClient.CustomClientEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
+	public RDMAClient.CustomClientEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
 		return new CustomClientEndpoint(endpointGroup, idPriv, serverSide);
 	}
 
 	public void run() throws Exception {
 		//create a EndpointGroup. The RdmaActiveEndpointGroup contains CQ processing and delivers CQ event to the endpoint.dispatchCqEvent() method.
-		endpointGroup = new RdmaActiveEndpointGroup<SendRecvClient.CustomClientEndpoint>(1000, false, 128, 4, 128);
+		endpointGroup = new RdmaActiveEndpointGroup<RDMAClient.CustomClientEndpoint>(1000, false, 128, 4, 128);
 		endpointGroup.init(this);
 	}
 
 	public String request(String request) throws Exception {
 		//we have passed our own endpoint factory to the group, therefore new endpoints will be of type CustomClientEndpoint
 		//let's create a new client endpoint
-		SendRecvClient.CustomClientEndpoint endpoint = endpointGroup.createEndpoint();
+		RDMAClient.CustomClientEndpoint endpoint = endpointGroup.createEndpoint();
 
 		//connect to the server
 		endpoint.connect(URI.create("rdma://" + ipAddress + ":" + 1919));
-		System.out.println("SimpleClient::client channel set up ");
+		System.out.println("[RDMAClient] client channel set up ");
 
 		//in our custom endpoints we have prepared (memory registration and work request creation) some memory
 		//buffers beforehand.
 		//let's send one of those buffers out using a send operation
 		ByteBuffer sendBuf = endpoint.getSendBuf();
-		System.out.print("SimpleClient::message to be sent: [" + request + "], length " + request.length());
+		System.out.print("[RDMAClient] message to be sent: [" + request + "], length " + request.length());
 		sendBuf.asCharBuffer().put(request);
 		sendBuf.clear();
 		SVCPostSend postSend = endpoint.postSend(endpoint.getWrList_send());
@@ -74,16 +72,16 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 		//in our custom endpoints we make sure CQ events get stored in a queue, we now query that queue for new CQ events.
 		//in this case a new CQ event means we have sent data, i.e., the message has been sent to the server
 		IbvWC wc = endpoint.getWcEvents().take();
-		System.out.println("SimpleClient::message sent, wr_id " + wc.getWr_id());
+		System.out.println("[RDMAClient] message sent, wr_id " + wc.getWr_id());
 		//in this case a new CQ event means we have received data
 		endpoint.getWcEvents().take();
-		System.out.println("SimpleClient::message received");
+		System.out.println("[RDMAClient] message received");
 
 		//the response should be received in this buffer, let's print it
 		ByteBuffer recvBuf = endpoint.getRecvBuf();
 		recvBuf.clear();
 		String response = recvBuf.asCharBuffer().toString();
-		System.out.println("SimpleClient::message from the server: [" + response + "], length " + response.length());
+		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length());
 
 		// close the customClientEndpoint
 		endpoint.close();
@@ -95,37 +93,8 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 		//close everything
 		endpointGroup.close();
 		System.out.println("group closed");
-//		System.exit(0);
 	}
 
-	public void launch(String[] args) throws Exception {
-		String[] _args = args;
-		if (args.length < 1) {
-			System.exit(0);
-		} else if (args[0].equals(SendRecvClient.class.getCanonicalName())) {
-			_args = new String[args.length - 1];
-			for (int i = 0; i < _args.length; i++) {
-				_args[i] = args[i + 1];
-			}
-		}
-
-		GetOpt go = new GetOpt(_args, "a:");
-		go.optErr = true;
-		int ch = -1;
-
-		while ((ch = go.getopt()) != GetOpt.optEOF) {
-			if ((char) ch == 'a') {
-				ipAddress = go.optArgGet();
-			} 
-		}	
-		
-		this.run();
-	}
-	
-	public static void main(String[] args) throws Exception { 
-		SendRecvClient simpleClient = new SendRecvClient(null);
-		simpleClient.launch(args);		
-	}		
 	
 	public static class CustomClientEndpoint extends RdmaActiveEndpoint {
 		private ByteBuffer buffers[];
@@ -203,7 +172,7 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 			sgeSend.setLength(sendMr.getLength());
 			sgeSend.setLkey(sendMr.getLkey());
 			sgeList.add(sgeSend);
-			sendWR.setWr_id(2000);
+			sendWR.setWr_id(2000);  // why do we set it to 2000 here and reset it to 4444 in RDMAClient::request()?
 			sendWR.setSg_list(sgeList);
 			sendWR.setOpcode(IbvSendWR.IBV_WR_SEND);
 			sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
@@ -219,7 +188,7 @@ public class SendRecvClient implements RdmaEndpointFactory<SendRecvClient.Custom
 			recvWR.setWr_id(2001);
 			wrList_recv.add(recvWR);
 			
-			System.out.println("SimpleClient::initiated recv");
+			System.out.println("[RDMAClient] initiated recv");
 			this.postRecv(wrList_recv).execute().free();		
 		}
 
