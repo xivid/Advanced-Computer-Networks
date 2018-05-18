@@ -31,6 +31,7 @@ import com.ibm.disni.util.GetOpt;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -44,6 +45,18 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 
 	private RdmaServerEndpoint<RDMAServer.CustomServerEndpoint> serverEndpoint;
 
+	private void packMsg(ByteBuffer buf, String msg) {
+		buf.putInt(msg.length()).put(msg.getBytes(StandardCharsets.US_ASCII));
+		buf.clear();
+	}
+
+	private String unpackMsg(ByteBuffer buf) {
+		buf.clear();
+		int len = buf.getInt();
+		buf.limit(len + 4);
+		return StandardCharsets.US_ASCII.decode(buf).toString(); //.substring(0, len);
+	}
+
 	public void run() throws Exception {
 		//create a EndpointGroup. The RdmaActiveEndpointGroup contains CQ processing and delivers CQ event to the endpoint.dispatchCqEvent() method.
 		endpointGroup = new RdmaActiveEndpointGroup<RDMAServer.CustomServerEndpoint>(1000, false, 128, 4, 128);
@@ -54,27 +67,25 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		//we can call bind on a server endpoint, just like we do with sockets
 		URI uri = URI.create("rdma://" + ipAddress + ":" + 1919);
 		serverEndpoint.bind(uri);
-		System.out.println("SimpleServer::servers bound to address " + uri.toString());
+		System.out.println("[RDMAServer] servers bound to address " + uri.toString());
 
 		while (true) {
 			//we can accept new connections
 			RDMAServer.CustomServerEndpoint clientEndpoint = serverEndpoint.accept();
 			//we have previously passed our own endpoint factory to the group, therefore new endpoints will be of type CustomServerEndpoint
-			System.out.println("SimpleServer::client connection accepted");
+			System.out.println("[RDMAServer] client connection accepted");
 
 			//in our custom endpoints we make sure CQ events get stored in a queue, we now query that queue for new CQ events.
 			//in this case a new CQ event means we have received data, i.e., a message from the client.
 			clientEndpoint.getWcEvents().take();
-			System.out.println("SimpleServer::message received");
-			ByteBuffer recvBuf = clientEndpoint.getRecvBuf();
-			recvBuf.clear();
-			String req = recvBuf.asCharBuffer().toString();
+			System.out.println("[RDMAServer] message received");
+
+			String req = unpackMsg(clientEndpoint.getRecvBuf());
 			System.out.println("Message from the client: [" + req + "], length " + req.length());
 			String[] tokens = req.split("\\s+");
-			for (String token : tokens) System.out.println(token);
+			// for (String token : tokens) System.out.println(token);
 
 			//in our custom endpoints we have prepared (memory registration and work request creation) some memory buffers beforehand.
-			ByteBuffer sendBuf = clientEndpoint.getSendBuf();
 			String response = "unknown";
 			if (tokens.length >= 1) {
 				if (tokens[0].equals("hello")) response = "hello there!";
@@ -83,17 +94,16 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 						response = String.valueOf(Integer.valueOf(tokens[2]) + Integer.valueOf(tokens[3]));
 					}
 				} else if (tokens[0].equals("GET") && tokens.length > 1 && tokens[1].startsWith("http://www.rdmawebpage.com")) {  // TODO: update rule
-					response = "HTTP/1.1 200 OK\n\n<h1>Welcome RDMA</h1>";
+					response = "HTTP/1.1 200 OK\n\n<h1>RDMA page</h1>";
 				}
 			}
-			sendBuf.asCharBuffer().put(response);
-			sendBuf.clear();
+			packMsg(clientEndpoint.getSendBuf(), response);
 
 			//let's respond with a message
 			clientEndpoint.postSend(clientEndpoint.getWrList_send()).execute().free();
 			//when receiving the CQ event we know the message has been sent
 			clientEndpoint.getWcEvents().take();
-			System.out.println("SimpleServer::message sent");
+			System.out.println("[RDMAServer] message sent");
 
 			clientEndpoint.close();
 			System.out.println("client endpoint closed");
@@ -134,8 +144,8 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 	}
 	
 	public static void main(String[] args) throws Exception { 
-		RDMAServer simpleServer = new RDMAServer();
-		simpleServer.launch(args);		
+		RDMAServer rdmaServer = new RDMAServer();
+		rdmaServer.launch(args);
 	}	
 	
 	public static class CustomServerEndpoint extends RdmaActiveEndpoint {
@@ -222,7 +232,7 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			recvWR.setWr_id(2001);
 			wrList_recv.add(recvWR);
 			
-			System.out.println("SimpleServer::initiated recv");
+			System.out.println("[RDMAServer] initiated recv");
 			this.postRecv(wrList_recv).execute().free();		
 		}
 

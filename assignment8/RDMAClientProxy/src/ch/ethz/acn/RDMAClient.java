@@ -29,6 +29,7 @@ import com.ibm.disni.rdma.verbs.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -50,7 +51,22 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		endpointGroup.init(this);
 	}
 
+	private void packMsg(ByteBuffer buf, String msg) {
+		buf.putInt(msg.length()).put(msg.getBytes(StandardCharsets.US_ASCII));
+		buf.clear();
+	}
+
+	private String unpackMsg(ByteBuffer buf) {
+		buf.clear();
+		int len = buf.getInt();
+		buf.limit(len + 4);
+		return StandardCharsets.US_ASCII.decode(buf).toString(); //.substring(0, len);
+	}
+
+
 	public String request(String request) throws Exception {
+		// TODO: on communication failure return HTTP 504 (Gateway Time-out)
+
 		//we have passed our own endpoint factory to the group, therefore new endpoints will be of type CustomClientEndpoint
 		//let's create a new client endpoint
 		RDMAClient.CustomClientEndpoint endpoint = endpointGroup.createEndpoint();
@@ -62,10 +78,10 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		//in our custom endpoints we have prepared (memory registration and work request creation) some memory
 		//buffers beforehand.
 		//let's send one of those buffers out using a send operation
-		ByteBuffer sendBuf = endpoint.getSendBuf();
-		System.out.print("[RDMAClient] message to be sent: [" + request + "], length " + request.length());
-		sendBuf.asCharBuffer().put(request);
-		sendBuf.clear();
+		System.out.println("[RDMAClient] message to be sent: [" + request + "], length " + request.length());
+
+		packMsg(endpoint.getSendBuf(), request);
+
 		SVCPostSend postSend = endpoint.postSend(endpoint.getWrList_send());
 		postSend.getWrMod(0).setWr_id(4444);
 		postSend.execute().free();
@@ -78,9 +94,7 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		System.out.println("[RDMAClient] message received");
 
 		//the response should be received in this buffer, let's print it
-		ByteBuffer recvBuf = endpoint.getRecvBuf();
-		recvBuf.clear();
-		String response = recvBuf.asCharBuffer().toString();
+		String response = unpackMsg(endpoint.getRecvBuf());
 		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length());
 
 		// close the customClientEndpoint
@@ -189,7 +203,7 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 			wrList_recv.add(recvWR);
 			
 			System.out.println("[RDMAClient] initiated recv");
-			this.postRecv(wrList_recv).execute().free();		
+			this.postRecv(wrList_recv).execute().free();
 		}
 
 		// Added by Zhifei Yang: deregister memory regions when closing the endpoint
