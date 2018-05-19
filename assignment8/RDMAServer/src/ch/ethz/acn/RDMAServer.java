@@ -132,7 +132,7 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		String[] _args = args;
 		if (args.length < 1) {
 			System.exit(0);
-		} else if (args[0].equals(RDMAClient.class.getCanonicalName())) {
+		} else if (args[0].equals(RDMAServer.class.getCanonicalName())) {
 			_args = new String[args.length - 1];
 			for (int i = 0; i < _args.length; i++) {
 				_args[i] = args[i + 1];

@@ -60,7 +60,7 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		buf.clear();
 		int len = buf.getInt();
 		buf.limit(len + 4);
-		return StandardCharsets.US_ASCII.decode(buf).toString(); //.substring(0, len);
+		return StandardCharsets.US_ASCII.decode(buf).toString();
 	}
 
 

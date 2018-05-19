@@ -21,7 +21,6 @@
 
 package ch.ethz.acn;
 
-import ch.ethz.acn.ReadServer;
 import com.ibm.disni.rdma.RdmaActiveEndpoint;
 import com.ibm.disni.rdma.RdmaActiveEndpointGroup;
 import com.ibm.disni.rdma.RdmaEndpointFactory;
@@ -115,7 +114,7 @@ public class ReadClient implements RdmaEndpointFactory<ReadClient.CustomClientEn
 		String[] _args = args;
 		if (args.length < 1) {
 			System.exit(0);
-		} else if (args[0].equals(ReadServer.class.getCanonicalName())) {
+		} else if (args[0].equals(ReadClient.class.getCanonicalName())) {
 			_args = new String[args.length - 1];
 			for (int i = 0; i < _args.length; i++) {
 				_args[i] = args[i + 1];
