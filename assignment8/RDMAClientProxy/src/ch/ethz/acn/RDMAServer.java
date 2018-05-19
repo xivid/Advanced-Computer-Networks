@@ -98,6 +98,10 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			sendBuf.putInt(dataMr.getLkey());
 			sendBuf.clear();
 
+			ByteBuffer dataBuf = clientEndpoint.getDataBuf();
+			dataBuf.asCharBuffer().put("<html><body><h1>Success!</h1><br/><img src=\"network.png\" alt=\"RDMA Read Image Missing!\"/></body></html>");
+			dataBuf.clear();			
+
 			System.out.println("Addr: " + dataMr.getAddr() + "Len: " + dataMr.getLength() + "Lkey: " + dataMr.getLkey());
 
 			//let's respond with a message
@@ -106,6 +110,10 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			clientEndpoint.getWcEvents().take();
 			System.out.println("[RDMAServer] message sent");
 
+			// Wait for termination message
+			//clientEndpoint.getWcEvents().take();
+			//System.out.println("[RDMAServer] Termination Message Received");		
+	
 			clientEndpoint.close();
 			System.out.println("client endpoint closed");
 		}
@@ -153,7 +161,7 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		private ByteBuffer buffers[];
 		private IbvMr mrlist[];
 		private int buffercount = 3;
-		private int buffersize = 100;
+		private int buffersize = 400;
 		
 		private ByteBuffer dataBuf;
 		private IbvMr dataMr;
@@ -177,7 +185,7 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		public CustomServerEndpoint(RdmaActiveEndpointGroup<CustomServerEndpoint> endpointGroup, RdmaCmId idPriv, boolean serverSide) throws IOException {	
 			super(endpointGroup, idPriv, serverSide);
 			this.buffercount = 3;
-			this.buffersize = 100;
+			this.buffersize = 206;
 			buffers = new ByteBuffer[buffercount];
 			this.mrlist = new IbvMr[buffercount];
 			

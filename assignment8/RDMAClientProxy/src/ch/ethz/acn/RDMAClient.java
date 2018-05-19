@@ -98,12 +98,40 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length());
 		
 		ByteBuffer recvBuf = endpoint.getRecvBuf();
+		ByteBuffer sendBuf = endpoint.getSendBuf();
 		recvBuf.limit(recvBuf.limit()+16);
 		long addr = recvBuf.getLong();
 		int len = recvBuf.getInt();
 		int lkey = recvBuf.getInt();
+		recvBuf.clear();
+		sendBuf.clear();
 		System.out.println("Addr: " + addr + "Len: " + len + "Lkey: " + lkey);				
+		// Use RDMA READ to get HTML content directly from server buffer
+		IbvSendWR sendWR = endpoint.getSendWR();
+		sendWR.setWr_id(4445);
+		sendWR.setOpcode(IbvSendWR.IBV_WR_RDMA_READ);
+		sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
+		sendWR.getRdma().setRemote_addr(addr);
+		sendWR.getRdma().setRkey(lkey);
+		
+		postSend = endpoint.postSend(endpoint.getWrList_send()).execute().free();
+		System.out.println("[RDMAClient] RDMA Read");
+		endpoint.getWcEvents().take();
+		
+		System.out.println("Full Response:");
+		response += sendBuf.asCharBuffer().toString();
+		System.out.println(response);
 
+		// Send a final message to terminate connection
+		//sendWR.setWr_id(4446);
+		//sendWR.setOpcode(IbvSendWR.IBV_WR_SEND);
+		//sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
+		//sendWR.getRdma().setRemote_addr(addr);
+		//sendWR.getRdma().setRkey(lkey);
+
+		//endpoint.postSend(endpoint.getWrList_send()).execute().free();
+		//System.out.println("[RDMAClient] Termination Message Sent");
+		
 		// close the customClientEndpoint
 		endpoint.close();
 
@@ -145,7 +173,7 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		public CustomClientEndpoint(RdmaActiveEndpointGroup<CustomClientEndpoint> endpointGroup, RdmaCmId idPriv, boolean serverSide) throws IOException {	
 			super(endpointGroup, idPriv, serverSide);
 			this.buffercount = 3;
-			this.buffersize = 100;
+			this.buffersize = 206;
 			buffers = new ByteBuffer[buffercount];
 			this.mrlist = new IbvMr[buffercount];
 			
@@ -183,11 +211,6 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 			this.recvMr = mrlist[2];
 			
 			dataBuf.clear();
-
-			sendBuf.putLong(dataMr.getAddr());
-			sendBuf.putInt(dataMr.getLength());
-			sendBuf.putInt(dataMr.getLkey());
-			sendBuf.clear();
 
 			sgeSend.setAddr(sendMr.getAddr());
 			sgeSend.setLength(sendMr.getLength());
