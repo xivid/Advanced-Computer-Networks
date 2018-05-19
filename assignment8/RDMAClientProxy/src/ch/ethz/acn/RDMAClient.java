@@ -175,7 +175,7 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 			this.recvBuf = buffers[2];
 			this.recvMr = mrlist[2];
 			
-			dataBuf.clear();		
+			dataBuf.clear();
 
 			sendBuf.putLong(dataMr.getAddr());
 			sendBuf.putInt(dataMr.getLength());
