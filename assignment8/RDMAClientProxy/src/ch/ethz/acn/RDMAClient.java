@@ -96,6 +96,13 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		//the response should be received in this buffer, let's print it
 		String response = unpackMsg(endpoint.getRecvBuf());
 		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length());
+		
+		ByteBuffer recvBuf = endpoint.getRecvBuf();
+		recvBuf.limit(recvBuf.limit()+16);
+		long addr = recvBuf.getLong();
+		int len = recvBuf.getInt();
+		int lkey = recvBuf.getInt();
+		System.out.println("Addr: " + addr + "Len: " + len + "Lkey: " + lkey);				
 
 		// close the customClientEndpoint
 		endpoint.close();

@@ -88,9 +88,17 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			//in our custom endpoints we have prepared (memory registration and work request creation) some memory buffers beforehand.
 			String response = "unknown";
 			if (tokens.length > 1 && tokens[0].equals("GET") && tokens[1].startsWith("http://www.rdmawebpage.com")) {
-					response = "HTTP/1.1 200 OK\n\n<h1>RDMA page</h1>";
+					response = "HTTP/1.1 200 OK\n\n";
 			}
-			packMsg(clientEndpoint.getSendBuf(), response);
+			ByteBuffer sendBuf = clientEndpoint.getSendBuf();
+			IbvMr dataMr = clientEndpoint.getDataMr();
+			sendBuf.putInt(response.length()).put(response.getBytes(StandardCharsets.US_ASCII));
+			sendBuf.putLong(dataMr.getAddr());
+			sendBuf.putInt(dataMr.getLength());
+			sendBuf.putInt(dataMr.getLkey());
+			sendBuf.clear();
+
+			System.out.println("Addr: " + dataMr.getAddr() + "Len: " + dataMr.getLength() + "Lkey: " + dataMr.getLkey());
 
 			//let's respond with a message
 			clientEndpoint.postSend(clientEndpoint.getWrList_send()).execute().free();
