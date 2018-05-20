@@ -134,8 +134,9 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 
 		postSend = endpoint.postSend(endpoint.getWrList_send());
 		postSend.execute().free();
-		System.out.println("[RDMAClient] RDMA Read " + len + " bytes");
+		System.out.println("[RDMAClient] RDMA Reading " + len + " bytes");
 		endpoint.getWcEvents().take();
+
 
 //		System.out.print("data: [");
 //		for (int i = 0; i < len; ++i) {
@@ -143,22 +144,25 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 //		}
 //		dataBuf.flip();
 //		System.out.println("]");
-		dataBuf.limit(len);
 
+
+		dataBuf.limit(len);
 		ByteBuffer ret = ByteBuffer.allocate(headerBuf.limit() + dataBuf.limit());
 		ret.put(headerBuf).put(dataBuf);
-		// response += unpackData(dataBuf, len);
-		// System.out.println("[RDMAClient] Full Response: [" + response + "], length " + response.length());
+		System.out.println("[RDMAClient] Returning Full Response with Length " + ret.limit());
 
 		// Send a final message to terminate connection
-		//sendWR.setWr_id(4446);
-		//sendWR.setOpcode(IbvSendWR.IBV_WR_SEND);
-		//sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
-		//sendWR.getRdma().setRemote_addr(addr);
-		//sendWR.getRdma().setRkey(lkey);
+		sendWR.setWr_id(4446);
+		sendWR.setOpcode(IbvSendWR.IBV_WR_SEND);
+		sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
+		sendWR.getRdma().setRemote_addr(addr);
+		sendWR.getRdma().setRkey(lkey);
 
-		//endpoint.postSend(endpoint.getWrList_send()).execute().free();
-		//System.out.println("[RDMAClient] Termination Message Sent");
+		// Post that operation
+		endpoint.postSend(endpoint.getWrList_send()).execute().free();
+		endpoint.getWcEvents().take();
+
+		System.out.println("[RDMAClient] Termination Message Sent");
 		
 		// close the customClientEndpoint
 		endpoint.close();
@@ -310,6 +314,8 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		}
 
 		public IbvMr getDataMr() { return dataMr; }
+
+		public IbvMr getSendMr() { return sendMr; }
 	}
 	
 }

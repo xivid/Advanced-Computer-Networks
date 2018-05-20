@@ -36,6 +36,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEndpoint> {
 	private String ipAddress;
@@ -122,6 +123,9 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			clientEndpoint.getWcEvents().take();
 			System.out.println("[RDMAServer] message received");
 
+			// postRecv to make sure we don't lose the next message (i.e. termination msg) from client
+			clientEndpoint.postRecv(clientEndpoint.getWrList_recv()).execute().free();
+
 			String req = unpackMsg(clientEndpoint.getRecvBuf());
 			System.out.println("Message from the client: [" + req + "], length " + req.length());
 			String[] tokens = req.split("\\s+");
@@ -145,16 +149,19 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 
 			//let's respond with a message
 			clientEndpoint.postSend(clientEndpoint.getWrList_send()).execute().free();
+
 			//when receiving the CQ event we know the message has been sent
 			clientEndpoint.getWcEvents().take();
-			System.out.println("[RDMAServer] message sent");
+			System.out.println("[RDMAServer] response header sent");
 
 			// Wait for termination message
-			//clientEndpoint.getWcEvents().take();
-			//System.out.println("[RDMAServer] Termination Message Received");
+			IbvWC wc = clientEndpoint.getWcEvents().poll(3000, TimeUnit.MILLISECONDS);
+			if (wc != null)
+				System.out.println("[RDMAServer] ### Termination Message Received");
+			else System.out.println("[RDMAServer] !!! Termination due to timeout !!!");
 
 			clientEndpoint.close();
-			System.out.println("client endpoint closed");
+			System.out.println("[RDMAServer] client endpoint closed");
 		}
 	}
 
