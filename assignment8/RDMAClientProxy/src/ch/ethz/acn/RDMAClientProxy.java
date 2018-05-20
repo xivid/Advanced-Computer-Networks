@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.concurrent.*;
 
 public class RDMAClientProxy {
 
@@ -87,6 +88,8 @@ public class RDMAClientProxy {
     }
 
     private void initHTTPProxy() {
+        ExecutorService executor = Executors.newCachedThreadPool();
+
         try (ServerSocket proxyServerSocket = new ServerSocket(3721)) {
             while (true) {
                 Socket clientSocket = proxyServerSocket.accept();
@@ -104,8 +107,13 @@ public class RDMAClientProxy {
                                     tokens[1].startsWith("http://www.rdmawebpage.com/"))) {
 
                         System.out.println(clientSocket + " redirecting to RDMA server");
+                        Future<ByteBuffer> future = executor.submit(new Callable<ByteBuffer>() {
+                           public ByteBuffer call() throws Exception {
+                               return rdmaClient.request(input);
+                           }
+                        });
                         try {
-                            ByteBuffer response = rdmaClient.request(input);
+                            ByteBuffer response = future.get(3, TimeUnit.SECONDS);
                             System.out.println(clientSocket + " rdma full response length " + response.limit());
                             clientOs.write(response.array());
                             clientOs.flush();

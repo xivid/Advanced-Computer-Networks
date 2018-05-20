@@ -36,7 +36,6 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEndpoint> {
 	private String ipAddress;
@@ -65,6 +64,10 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		buf.limit(len + 4);
 		return StandardCharsets.US_ASCII.decode(buf).toString();
 	}
+
+	private static final String http200 = "HTTP/1.1 200 OK\n\n";
+	private static final String http404 = "HTTP/1.1 404 Not Found\n\n<html><h1>404 Not Found</h1></html>";
+	private static final String http400 = "HTTP/1.1 400 Bad Request\n\n<html><h1>400 Bad Request</h1></html>";
 
 	private ByteBuffer htmlBuf;
 	private ByteBuffer pngBuf;
@@ -131,19 +134,20 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			String[] tokens = req.split("\\s+");
 
 			//in our custom endpoints we have prepared (memory registration and work request creation) some memory buffers beforehand.
-			String response = "HTTP/1.1 404 Not Found\n\n";
+
 			if (tokens.length > 1 && tokens[0].equals("GET") && tokens[1].startsWith("http://www.rdmawebpage.com")) {
 				if (tokens[1].equals("http://www.rdmawebpage.com/")
 						|| tokens[1].equals("http://www.rdmawebpage.com/index.html")
 						|| tokens[1].equals("http://www.rdmawebpage.com")) {
-					response = "HTTP/1.1 200 OK\n\n";
-					packMsg(clientEndpoint.getSendBuf(), response, clientEndpoint.getHtmlMr());
+					packMsg(clientEndpoint.getSendBuf(), http200, clientEndpoint.getHtmlMr());
 				} else if (tokens[1].equals("http://www.rdmawebpage.com/network.png")) {
-					response = "HTTP/1.1 200 OK\nContent-Type: image/png\nContent-Length: " + pngBuf.limit() + "\n\n";
+					String response = "HTTP/1.1 200 OK\nContent-Type: image/png\nContent-Length: " + pngBuf.limit() + "\n\n";
 					packMsg(clientEndpoint.getSendBuf(), response, clientEndpoint.getPngMr());
+				} else {
+					packMsg(clientEndpoint.getSendBuf(), http404, null);  // TODO: enable the RDMAClient to recognize 404 with null mr
 				}
 			} else {
-				packMsg(clientEndpoint.getSendBuf(), response, null);  // TODO: enable the RDMAClient to recognize 404 with null mr
+				packMsg(clientEndpoint.getSendBuf(), http400, null);  // TODO: enable the RDMAClient to recognize 400 with null mr
 			}
 
 

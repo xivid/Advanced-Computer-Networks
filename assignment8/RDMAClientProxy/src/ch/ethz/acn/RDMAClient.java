@@ -38,6 +38,8 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 	private String ipAddress;
 	RdmaActiveEndpointGroup<RDMAClient.CustomClientEndpoint> endpointGroup;
 
+	private static final String http404 = "HTTP/1.1 404 Not Found\n\n";
+	private static final String http400 = "HTTP/1.1 400 Bad Request\n\n";
 
 	public RDMAClient(String ipAddress) { this.ipAddress = ipAddress; }
 
@@ -99,57 +101,64 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		ByteBuffer recvBuf = endpoint.getRecvBuf();
 		ByteBuffer dataBuf = endpoint.getDataBuf();
 
+		// get sendWR
+		IbvSendWR sendWR = endpoint.getSendWR();
+
 		//the response should be received in this buffer, let's print it
 		ByteBuffer headerBuf = unpackHeader(recvBuf);
 		String headerStr = StandardCharsets.US_ASCII.decode(headerBuf).toString();
 		headerBuf.flip();
 
-		// TODO: only READ when headerStr is HTTP 200 (our server can return 404!)
-		recvBuf.limit(recvBuf.limit()+16);
-		long addr = recvBuf.getLong();
-		int len = recvBuf.getInt();
-		int lkey = recvBuf.getInt();
-		recvBuf.clear();
-		System.out.println("[RDMAClient] header from the server: [" + headerStr + "], length " + headerStr.length()
-				+ ", Addr: " + addr + ", Len: " + len + ", Lkey: " + lkey);
+		if (headerStr.equals(http400) || headerStr.equals(http404)) {
+			dataBuf.limit(0);
+			System.out.println("[RDMAClient] header from the server: [" + headerStr + "], length " + headerStr.length()
+					+ ", no READ needed");
+		} else {
+			recvBuf.limit(recvBuf.limit() + 16);
+			long addr = recvBuf.getLong();
+			int len = recvBuf.getInt();
+			int lkey = recvBuf.getInt();
+			recvBuf.clear();
+			System.out.println("[RDMAClient] header from the server: [" + headerStr + "], length " + headerStr.length()
+					+ ", Addr: " + addr + ", Len: " + len + ", Lkey: " + lkey);
 
-		// Use RDMA READ to get HTML content directly from server buffer
-		IbvSendWR sendWR = endpoint.getSendWR();
-		sendWR.setWr_id(4445);
-		sendWR.setOpcode(IbvSendWR.IBV_WR_RDMA_READ);
-		sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
-		sendWR.getRdma().setRemote_addr(addr);
-		sendWR.getRdma().setRkey(lkey);
+			// Use RDMA READ to get HTML content directly from server buffer
+			sendWR.setWr_id(4445);
+			sendWR.setOpcode(IbvSendWR.IBV_WR_RDMA_READ);
+			sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
+			sendWR.getRdma().setRemote_addr(addr);
+			sendWR.getRdma().setRkey(lkey);
 
-		// make READ into dataMr
-		dataBuf.clear();
-		IbvMr dataMr = endpoint.getDataMr();
-		assert dataMr.getLength() >= len;
-		IbvSge sge = sendWR.getSge(0);
-		sge.setAddr(dataMr.getAddr());
-		sge.setLength(len);
-		sge.setLkey(dataMr.getLkey());
+			// make READ into dataMr
+			dataBuf.clear();
+			IbvMr dataMr = endpoint.getDataMr();
+			assert dataMr.getLength() >= len;
+			IbvSge sge = sendWR.getSge(0);
+			sge.setAddr(dataMr.getAddr());
+			sge.setLength(len);
+			sge.setLkey(dataMr.getLkey());
 
-		postSend = endpoint.postSend(endpoint.getWrList_send());
-		postSend.execute().free();
-		System.out.println("[RDMAClient] RDMA Reading " + len + " bytes");
-		endpoint.getWcEvents().take();
+			postSend = endpoint.postSend(endpoint.getWrList_send());
+			postSend.execute().free();
+			System.out.println("[RDMAClient] RDMA Reading " + len + " bytes");
+			endpoint.getWcEvents().take();
 
-		dataBuf.limit(len);
+			dataBuf.limit(len);
+
+			// point the original SEND sge back to sendMr
+			IbvMr sendMr = endpoint.getSendMr();
+			sge.setAddr(sendMr.getAddr());
+			sge.setLength(sendMr.getLength());
+			sge.setLkey(sendMr.getLkey());
+		}
+
 		ByteBuffer ret = ByteBuffer.allocate(headerBuf.limit() + dataBuf.limit());
 		ret.put(headerBuf).put(dataBuf);
 		System.out.println("[RDMAClient] Returning Full Response with Length " + ret.limit());
-
 		// Send a final message to terminate connection
 		sendWR.setWr_id(4446);
 		sendWR.setOpcode(IbvSendWR.IBV_WR_SEND);
 		sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
-		sendWR.getRdma().setRemote_addr(addr);
-		sendWR.getRdma().setRkey(lkey);
-		IbvMr sendMr = endpoint.getSendMr();
-		sge.setAddr(sendMr.getAddr());
-		sge.setLength(sendMr.getLength());
-		sge.setLkey(sendMr.getLkey());
 
 		// Post that operation
 		endpoint.postSend(endpoint.getWrList_send()).execute().free();
