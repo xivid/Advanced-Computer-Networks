@@ -17,7 +17,7 @@ public class RDMAClientProxy {
             "  <meta charset=utf-8>\n" +
             "  <title>Error 404 (Not Found)</title>\n" +
             "  <h1>404 Not Found</h1>\n" +
-            "  <p>The requested URL was not found.</p>";
+            "  <p>The requested URL was not found.</p>\n";
 
     private String ipAddress;
 
@@ -97,10 +97,12 @@ public class RDMAClientProxy {
                         System.out.println(clientSocket + " redirecting to RDMA server");
                         String response = rdmaClient.request(input);
                         System.out.println(clientSocket + " rdma server response: [" + response + "]");
-                        clientOut.println(response);
+                        clientOut.print(response);
+                        clientOut.flush();
                     } else {
                         System.out.println(clientSocket + " handling at proxy");
-                        clientOut.println(msg404);
+                        clientOut.print(msg404);
+                        clientOut.flush();
                     }
                     clientSocket.close();
                 }
