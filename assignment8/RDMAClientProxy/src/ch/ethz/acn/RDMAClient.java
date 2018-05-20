@@ -63,6 +63,12 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		return StandardCharsets.US_ASCII.decode(buf).toString();
 	}
 
+	private String unpackData(ByteBuffer buf, int len) {
+		buf.clear();
+		buf.limit(len);
+		return StandardCharsets.US_ASCII.decode(buf).toString();
+	}
+
 
 	public String request(String request) throws Exception {
 		// TODO: on communication failure return HTTP 504 (Gateway Time-out)
@@ -96,7 +102,8 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		//the response should be received in this buffer, let's print it
 		String response = unpackMsg(endpoint.getRecvBuf());
 		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length());
-		
+
+		// get static content info
 		ByteBuffer recvBuf = endpoint.getRecvBuf();
 		ByteBuffer sendBuf = endpoint.getSendBuf();
 		recvBuf.limit(recvBuf.limit()+16);
@@ -105,7 +112,8 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		int lkey = recvBuf.getInt();
 		recvBuf.clear();
 		sendBuf.clear();
-		System.out.println("Addr: " + addr + "Len: " + len + "Lkey: " + lkey);				
+		System.out.println("Addr: " + addr + "Len: " + len + "Lkey: " + lkey);
+
 		// Use RDMA READ to get HTML content directly from server buffer
 		IbvSendWR sendWR = endpoint.getSendWR();
 		sendWR.setWr_id(4445);
@@ -113,14 +121,31 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
 		sendWR.getRdma().setRemote_addr(addr);
 		sendWR.getRdma().setRkey(lkey);
-		
-		postSend = endpoint.postSend(endpoint.getWrList_send()).execute().free();
+		postSend = endpoint.postSend(endpoint.getWrList_send());
+
+		// READ to dataMr
+		/*IbvMr dataMr = endpoint.getDataMr();
+		SVCPostSend.SgeMod sgeMod = postSend.getWrMod(0).getSgeMod(0);
+		assert dataMr.getLength() >= len;
+		sgeMod.setAddr(dataMr.getAddr());
+		sgeMod.setLength(dataMr.getLength());
+		sgeMod.setLkey(dataMr.getLkey());*/
+
+		postSend.execute().free();
 		System.out.println("[RDMAClient] RDMA Read");
 		endpoint.getWcEvents().take();
-		
-		System.out.println("Full Response:");
-		response += sendBuf.asCharBuffer().toString();
-		System.out.println(response);
+
+		ByteBuffer dataBuf = endpoint.getDataBuf();
+
+		System.out.print("data: [");
+		for (int i = 0; i < len; ++i) {
+			System.out.print((char) sendBuf.get());
+		}
+		sendBuf.flip();
+		System.out.println("]");
+
+		response += unpackData(sendBuf, len); // dataBuf.asCharBuffer().toString();
+		System.out.println("[RDMAClient] Full Response: [" + response + "]");
 
 		// Send a final message to terminate connection
 		//sendWR.setWr_id(4446);
@@ -148,8 +173,8 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 	public static class CustomClientEndpoint extends RdmaActiveEndpoint {
 		private ByteBuffer buffers[];
 		private IbvMr mrlist[];
-		private int buffercount = 3;
-		private int buffersize = 100;
+		private int buffercount;
+		private int buffersize;
 		
 		private ByteBuffer dataBuf;
 		private IbvMr dataMr;
@@ -176,8 +201,9 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 			this.buffersize = 206;
 			buffers = new ByteBuffer[buffercount];
 			this.mrlist = new IbvMr[buffercount];
-			
-			for (int i = 0; i < buffercount; i++){
+
+			buffers[0] = ByteBuffer.allocateDirect(3000);  // allocate large enough datamr to hold png
+			for (int i = 1; i < buffercount; i++){
 				buffers[i] = ByteBuffer.allocateDirect(buffersize);
 			}
 			
@@ -279,7 +305,9 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 
 		public IbvRecvWR getRecvWR() {
 			return recvWR;
-		}		
+		}
+
+		public IbvMr getDataMr() { return dataMr; }
 	}
 	
 }
