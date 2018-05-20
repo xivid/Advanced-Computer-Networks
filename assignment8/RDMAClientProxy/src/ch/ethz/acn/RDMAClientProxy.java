@@ -96,7 +96,7 @@ public class RDMAClientProxy {
 
                         System.out.println(clientSocket + " redirecting to RDMA server");
                         String response = rdmaClient.request(input);
-                        System.out.println(clientSocket + " rdma server response: " + response);
+                        System.out.println(clientSocket + " rdma server response: [" + response + "]");
                         clientOut.println(response);
                     } else {
                         System.out.println(clientSocket + " handling at proxy");

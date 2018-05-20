@@ -99,20 +99,22 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		endpoint.getWcEvents().take();
 		System.out.println("[RDMAClient] message received");
 
-		//the response should be received in this buffer, let's print it
-		String response = unpackMsg(endpoint.getRecvBuf());
-		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length());
-
-		// get static content info
+		// get buffers
 		ByteBuffer recvBuf = endpoint.getRecvBuf();
 		ByteBuffer sendBuf = endpoint.getSendBuf();
+		ByteBuffer dataBuf = endpoint.getDataBuf();
+
+		//the response should be received in this buffer, let's print it
+		String response = unpackMsg(recvBuf);
 		recvBuf.limit(recvBuf.limit()+16);
 		long addr = recvBuf.getLong();
 		int len = recvBuf.getInt();
 		int lkey = recvBuf.getInt();
 		recvBuf.clear();
+		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length()
+				+ ", Addr: " + addr + ", Len: " + len + ", Lkey: " + lkey);
+
 		sendBuf.clear();
-		System.out.println("Addr: " + addr + "Len: " + len + "Lkey: " + lkey);
 
 		// Use RDMA READ to get HTML content directly from server buffer
 		IbvSendWR sendWR = endpoint.getSendWR();
@@ -121,30 +123,29 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
 		sendWR.getRdma().setRemote_addr(addr);
 		sendWR.getRdma().setRkey(lkey);
-		postSend = endpoint.postSend(endpoint.getWrList_send());
 
-		// READ to dataMr
-		/*IbvMr dataMr = endpoint.getDataMr();
-		SVCPostSend.SgeMod sgeMod = postSend.getWrMod(0).getSgeMod(0);
+		// make READ into dataMr
+		dataBuf.clear();
+		IbvMr dataMr = endpoint.getDataMr();
 		assert dataMr.getLength() >= len;
-		sgeMod.setAddr(dataMr.getAddr());
-		sgeMod.setLength(dataMr.getLength());
-		sgeMod.setLkey(dataMr.getLkey());*/
+		IbvSge sge = sendWR.getSge(0);
+		sge.setAddr(dataMr.getAddr());
+		sge.setLength(len);
+		sge.setLkey(dataMr.getLkey());
 
+		postSend = endpoint.postSend(endpoint.getWrList_send());
 		postSend.execute().free();
 		System.out.println("[RDMAClient] RDMA Read");
 		endpoint.getWcEvents().take();
 
-		ByteBuffer dataBuf = endpoint.getDataBuf();
-
 		System.out.print("data: [");
 		for (int i = 0; i < len; ++i) {
-			System.out.print((char) sendBuf.get());
+			System.out.print((char) dataBuf.get());
 		}
-		sendBuf.flip();
+		dataBuf.flip();
 		System.out.println("]");
 
-		response += unpackData(sendBuf, len); // dataBuf.asCharBuffer().toString();
+		response += unpackData(dataBuf, len); // dataBuf.asCharBuffer().toString();
 		System.out.println("[RDMAClient] Full Response: [" + response + "]");
 
 		// Send a final message to terminate connection
@@ -247,7 +248,6 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 			sendWR.setOpcode(IbvSendWR.IBV_WR_SEND);
 			sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
 			wrList_send.add(sendWR);
-
 			
 			sgeRecv.setAddr(recvMr.getAddr());
 			sgeRecv.setLength(recvMr.getLength());

@@ -29,10 +29,8 @@ import com.ibm.disni.rdma.verbs.*;
 import com.ibm.disni.util.GetOpt;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -42,19 +40,13 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 	RdmaActiveEndpointGroup<RDMAServer.CustomServerEndpoint> endpointGroup;
 
 	public RDMAServer.CustomServerEndpoint createEndpoint(RdmaCmId idPriv, boolean serverSide) throws IOException {
-		return new RDMAServer.CustomServerEndpoint(endpointGroup, idPriv, serverSide, htmlBuf, pngBuf);
-	}	
+		return new RDMAServer.CustomServerEndpoint(endpointGroup, idPriv, serverSide);
+	}
 
 	private RdmaServerEndpoint<RDMAServer.CustomServerEndpoint> serverEndpoint;
 
-	private void packMsg(ByteBuffer buf, String msg, IbvMr dataMr) {
+	private void packMsg(ByteBuffer buf, String msg) {
 		buf.putInt(msg.length()).put(msg.getBytes(StandardCharsets.US_ASCII));
-		if (dataMr != null) {
-			buf.putLong(dataMr.getAddr());
-			buf.putInt(dataMr.getLength());
-			buf.putInt(dataMr.getLkey());
-			System.out.println("Return HTTP 200 with resource Addr: " + dataMr.getAddr() + ", Len: " + dataMr.getLength() + ", Lkey: " + dataMr.getLkey());
-		}
 		buf.clear();
 	}
 
@@ -62,40 +54,10 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		buf.clear();
 		int len = buf.getInt();
 		buf.limit(len + 4);
-		return StandardCharsets.US_ASCII.decode(buf).toString();
-	}
-
-	private ByteBuffer htmlBuf;
-	private ByteBuffer pngBuf;
-
-	private ByteBuffer readFile(String path) throws Exception {
-		RandomAccessFile htmlFile = new RandomAccessFile(path, "r");
-		FileChannel inChannel = htmlFile.getChannel();
-		long fileSize = inChannel.size();
-		ByteBuffer buf = ByteBuffer.allocateDirect((int) fileSize);
-		inChannel.read(buf);
-		buf.flip();
-		return buf;
-	}
-
-	private void initResources() throws Exception {
-		System.out.println("[RDMAServer] preparing static contents");
-
-		htmlBuf = readFile("static_content/index.html");
-		System.out.println("[RDMAServer] index.html: size " + htmlBuf.limit());
-
-		for (int i = 0; i < htmlBuf.limit(); ++i)
-			System.out.print((char) htmlBuf.get());
-		htmlBuf.flip();
-
-		pngBuf = readFile("static_content/network.png");
-		System.out.println("[RDMAServer] network.png: size " + pngBuf.limit());
+		return StandardCharsets.US_ASCII.decode(buf).toString(); //.substring(0, len);
 	}
 
 	public void run() throws Exception {
-		// read static contents
-		initResources();
-
 		//create a EndpointGroup. The RdmaActiveEndpointGroup contains CQ processing and delivers CQ event to the endpoint.dispatchCqEvent() method.
 		endpointGroup = new RdmaActiveEndpointGroup<RDMAServer.CustomServerEndpoint>(1000, false, 128, 4, 128);
 		endpointGroup.init(this);
@@ -121,27 +83,31 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			String req = unpackMsg(clientEndpoint.getRecvBuf());
 			System.out.println("Message from the client: [" + req + "], length " + req.length());
 			String[] tokens = req.split("\\s+");
+			// for (String token : tokens) System.out.println(token);
 
 			//in our custom endpoints we have prepared (memory registration and work request creation) some memory buffers beforehand.
-			String response = "HTTP/1.1 404 Not Found\n\n";
+			String response = "unknown";
 			if (tokens.length > 1 && tokens[0].equals("GET") && tokens[1].startsWith("http://www.rdmawebpage.com")) {
-				if (tokens[1].equals("http://www.rdmawebpage.com/")
-						|| tokens[1].equals("http://www.rdmawebpage.com/index.html")
-						|| tokens[1].equals("http://www.rdmawebpage.com")) {
-					response = "HTTP/1.1 200 OK\n\n";
-
-					htmlBuf.asCharBuffer().put("<html><body><h1>Success!</h1></body></html>");
-					htmlBuf.clear();
-
-					packMsg(clientEndpoint.getSendBuf(), response, clientEndpoint.getHtmlMr());
-				} else if (tokens[1].equals("http://www.rdmawebpage.com/network.png")) {
-					response = "HTTP/1.1 200 OK\n\n";
-					packMsg(clientEndpoint.getSendBuf(), response, clientEndpoint.getPngMr());
-				}
-			} else {
-				packMsg(clientEndpoint.getSendBuf(), response, null);  // TODO: enable the RDMAClient to recognize 404 with null mr
+				response = "HTTP/1.1 200 OK\n\n";
 			}
 
+			String html = "<html><body><h1>Success!</h1><br/><img src=\"network.png\" alt=\"RDMA Read Image Missing!\"/></body></html>\n";
+
+			ByteBuffer sendBuf = clientEndpoint.getSendBuf();
+			IbvMr dataMr = clientEndpoint.getDataMr();
+			sendBuf.putInt(response.length()).put(response.getBytes(StandardCharsets.US_ASCII));
+			sendBuf.putLong(dataMr.getAddr());
+			sendBuf.putInt(html.length()); //(dataMr.getLength());
+			sendBuf.putInt(dataMr.getLkey());
+			sendBuf.clear();
+
+			ByteBuffer dataBuf = clientEndpoint.getDataBuf();
+			dataBuf.put(ByteBuffer.wrap(html.getBytes(StandardCharsets.US_ASCII)));
+
+			//dataBuf.asCharBuffer().put();
+			dataBuf.clear();
+
+			System.out.println("Addr: " + dataMr.getAddr() + "Len: " + html.length() + "Lkey: " + dataMr.getLkey());
 
 			//let's respond with a message
 			clientEndpoint.postSend(clientEndpoint.getWrList_send()).execute().free();
@@ -151,8 +117,8 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 
 			// Wait for termination message
 			//clientEndpoint.getWcEvents().take();
-			//System.out.println("[RDMAServer] Termination Message Received");		
-	
+			//System.out.println("[RDMAServer] Termination Message Received");
+
 			clientEndpoint.close();
 			System.out.println("client endpoint closed");
 		}
@@ -166,7 +132,7 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		System.out.println("group closed");
 //		System.exit(0);
 	}
-	
+
 	public void launch(String[] args) throws Exception {
 		String[] _args = args;
 		if (args.length < 1) {
@@ -185,89 +151,82 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		while ((ch = go.getopt()) != GetOpt.optEOF) {
 			if ((char) ch == 'a') {
 				ipAddress = go.optArgGet();
-			} 
-		}	
-		
+			}
+		}
+
 		this.run();
 	}
-	
-	public static void main(String[] args) throws Exception { 
+
+	public static void main(String[] args) throws Exception {
 		RDMAServer rdmaServer = new RDMAServer();
 		rdmaServer.launch(args);
-	}	
-	
+	}
+
 	public static class CustomServerEndpoint extends RdmaActiveEndpoint {
 		private ByteBuffer buffers[];
 		private IbvMr mrlist[];
-		private int buffercount;
-		private int buffersize;
-		
+		private int buffercount = 3;
+		private int buffersize = 400;
+
+		private ByteBuffer dataBuf;
+		private IbvMr dataMr;
 		private ByteBuffer sendBuf;
 		private IbvMr sendMr;
 		private ByteBuffer recvBuf;
 		private IbvMr recvMr;
-		private ByteBuffer htmlBuf;
-		private IbvMr htmlMr;
-		private ByteBuffer pngBuf;
-		private IbvMr pngMr;
 
 		private LinkedList<IbvSendWR> wrList_send;
 		private IbvSge sgeSend;
 		private LinkedList<IbvSge> sgeList;
 		private IbvSendWR sendWR;
-		
+
 		private LinkedList<IbvRecvWR> wrList_recv;
 		private IbvSge sgeRecv;
 		private LinkedList<IbvSge> sgeListRecv;
 		private IbvRecvWR recvWR;
-		
+
 		private ArrayBlockingQueue<IbvWC> wcEvents;
 
-		public CustomServerEndpoint(RdmaActiveEndpointGroup<CustomServerEndpoint> endpointGroup, RdmaCmId idPriv,
-									boolean serverSide, ByteBuffer htmlBuf, ByteBuffer pngBuf) throws IOException {
+		public CustomServerEndpoint(RdmaActiveEndpointGroup<CustomServerEndpoint> endpointGroup, RdmaCmId idPriv, boolean serverSide) throws IOException {
 			super(endpointGroup, idPriv, serverSide);
-			this.buffercount = 4;
+			this.buffercount = 3;
 			this.buffersize = 206;
 			buffers = new ByteBuffer[buffercount];
 			this.mrlist = new IbvMr[buffercount];
-			
-			for (int i = 0; i < 2; i++){
+
+			for (int i = 0; i < buffercount; i++){
 				buffers[i] = ByteBuffer.allocateDirect(buffersize);
 			}
-			buffers[2] = htmlBuf;
-			buffers[3] = pngBuf;
-			
-			this.wrList_send = new LinkedList<IbvSendWR>();	
+
+			this.wrList_send = new LinkedList<IbvSendWR>();
 			this.sgeSend = new IbvSge();
 			this.sgeList = new LinkedList<IbvSge>();
 			this.sendWR = new IbvSendWR();
-			
-			this.wrList_recv = new LinkedList<IbvRecvWR>();	
+
+			this.wrList_recv = new LinkedList<IbvRecvWR>();
 			this.sgeRecv = new IbvSge();
 			this.sgeListRecv = new LinkedList<IbvSge>();
-			this.recvWR = new IbvRecvWR();		
-			
+			this.recvWR = new IbvRecvWR();
+
 			this.wcEvents = new ArrayBlockingQueue<IbvWC>(10);
 		}
-		
-		//important: we override the init method to prepare some buffers (memory registration, post recv, etc). 
-		//This guarantees that at least one recv operation will be posted at the moment this endpoint is connected. 	
+
+		//important: we override the init method to prepare some buffers (memory registration, post recv, etc).
+		//This guarantees that at least one recv operation will be posted at the moment this endpoint is connected.
 		public void init() throws IOException{
 			super.init();
-			
+
 			for (int i = 0; i < buffercount; i++){
 				mrlist[i] = registerMemory(buffers[i]).execute().free().getMr();
 			}
 
-			this.sendBuf = buffers[0];
-			this.sendMr = mrlist[0];
-			this.recvBuf = buffers[1];
-			this.recvMr = mrlist[1];
-			this.htmlBuf = buffers[2];
-			this.htmlMr = mrlist[2];
-			this.pngBuf = buffers[3];
-			this.pngMr = mrlist[3];
-			
+			this.dataBuf = buffers[0];
+			this.dataMr = mrlist[0];
+			this.sendBuf = buffers[1];
+			this.sendMr = mrlist[1];
+			this.recvBuf = buffers[2];
+			this.recvMr = mrlist[2];
+
 			sgeSend.setAddr(sendMr.getAddr());
 			sgeSend.setLength(sendMr.getLength());
 			sgeSend.setLkey(sendMr.getLkey());
@@ -277,18 +236,18 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			sendWR.setOpcode(IbvSendWR.IBV_WR_SEND);
 			sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
 			wrList_send.add(sendWR);
-			
+
 			sgeRecv.setAddr(recvMr.getAddr());
 			sgeRecv.setLength(recvMr.getLength());
 			int lkey = recvMr.getLkey();
 			sgeRecv.setLkey(lkey);
-			sgeListRecv.add(sgeRecv);	
+			sgeListRecv.add(sgeRecv);
 			recvWR.setSg_list(sgeListRecv);
 			recvWR.setWr_id(2001);
 			wrList_recv.add(recvWR);
-			
+
 			System.out.println("[RDMAServer] initiated recv");
-			this.postRecv(wrList_recv).execute().free();		
+			this.postRecv(wrList_recv).execute().free();
 		}
 
 		// Added by Zhifei Yang: deregister memory regions when closing the endpoint
@@ -303,10 +262,10 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		public void dispatchCqEvent(IbvWC wc) throws IOException {
 			wcEvents.add(wc);
 		}
-		
+
 		public ArrayBlockingQueue<IbvWC> getWcEvents() {
 			return wcEvents;
-		}		
+		}
 
 		public LinkedList<IbvSendWR> getWrList_send() {
 			return wrList_send;
@@ -314,6 +273,10 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 
 		public LinkedList<IbvRecvWR> getWrList_recv() {
 			return wrList_recv;
+		}
+
+		public ByteBuffer getDataBuf() {
+			return dataBuf;
 		}
 
 		public ByteBuffer getSendBuf() {
@@ -324,20 +287,16 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			return recvBuf;
 		}
 
-		public ByteBuffer getHtmlBuf() {
-			return htmlBuf;
-		}
-
-		public ByteBuffer getPngBuf() {
-			return pngBuf;
-		}
-
 		public IbvSendWR getSendWR() {
 			return sendWR;
 		}
 
 		public IbvRecvWR getRecvWR() {
 			return recvWR;
+		}
+
+		public IbvMr getDataMr() {
+			return dataMr;
 		}
 
 		public IbvMr getSendMr() {
@@ -347,16 +306,7 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 		public IbvMr getRecvMr() {
 			return recvMr;
 		}
-
-		public IbvMr getHtmlMr() {
-			return htmlMr;
-		}
-
-		public IbvMr getPngMr() {
-			return pngMr;
-		}
-
 	}
-	
+
 }
 
