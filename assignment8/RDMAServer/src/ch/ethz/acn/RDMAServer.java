@@ -155,11 +155,10 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 			System.out.println("[RDMAServer] response header sent");
 
 			// Wait for termination message
-			IbvWC wc = clientEndpoint.getWcEvents().poll(3000, TimeUnit.MILLISECONDS);
-			if (wc != null)
-				System.out.println("[RDMAServer] ### Termination Message Received");
-			else System.out.println("[RDMAServer] !!! Termination due to timeout !!!");
+			clientEndpoint.getWcEvents().take();
+			System.out.println("[RDMAServer] Termination Message Received");
 
+			// close everything
 			clientEndpoint.close();
 			System.out.println("[RDMAServer] client endpoint closed");
 		}

@@ -69,14 +69,12 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 
 
 	public ByteBuffer request(String request) throws Exception {
-		// TODO: on communication failure return HTTP 504 (Gateway Time-out)
-
 		//we have passed our own endpoint factory to the group, therefore new endpoints will be of type CustomClientEndpoint
 		//let's create a new client endpoint
 		RDMAClient.CustomClientEndpoint endpoint = endpointGroup.createEndpoint();
 
 		//connect to the server
-		endpoint.connect(URI.create("rdma://" + ipAddress + ":" + 1919));
+		endpoint.connect(URI.create("rdma://" + ipAddress + ":" + 1919));  // TODO: detect timeout
 		System.out.println("[RDMAClient] client channel set up ");
 
 		//in our custom endpoints we have prepared (memory registration and work request creation) some memory
@@ -99,7 +97,6 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 
 		// get buffers
 		ByteBuffer recvBuf = endpoint.getRecvBuf();
-		ByteBuffer sendBuf = endpoint.getSendBuf();
 		ByteBuffer dataBuf = endpoint.getDataBuf();
 
 		//the response should be received in this buffer, let's print it
@@ -107,6 +104,7 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		String headerStr = StandardCharsets.US_ASCII.decode(headerBuf).toString();
 		headerBuf.flip();
 
+		// TODO: only READ when headerStr is HTTP 200 (our server can return 404!)
 		recvBuf.limit(recvBuf.limit()+16);
 		long addr = recvBuf.getLong();
 		int len = recvBuf.getInt();
@@ -137,15 +135,6 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		System.out.println("[RDMAClient] RDMA Reading " + len + " bytes");
 		endpoint.getWcEvents().take();
 
-
-//		System.out.print("data: [");
-//		for (int i = 0; i < len; ++i) {
-//			System.out.print((char) dataBuf.get());
-//		}
-//		dataBuf.flip();
-//		System.out.println("]");
-
-
 		dataBuf.limit(len);
 		ByteBuffer ret = ByteBuffer.allocate(headerBuf.limit() + dataBuf.limit());
 		ret.put(headerBuf).put(dataBuf);
@@ -157,6 +146,10 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		sendWR.setSend_flags(IbvSendWR.IBV_SEND_SIGNALED);
 		sendWR.getRdma().setRemote_addr(addr);
 		sendWR.getRdma().setRkey(lkey);
+		IbvMr sendMr = endpoint.getSendMr();
+		sge.setAddr(sendMr.getAddr());
+		sge.setLength(sendMr.getLength());
+		sge.setLkey(sendMr.getLkey());
 
 		// Post that operation
 		endpoint.postSend(endpoint.getWrList_send()).execute().free();
