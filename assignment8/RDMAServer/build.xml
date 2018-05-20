@@ -133,6 +133,10 @@
         <type type="file"/>
       </fileset>
     </copy>
+
+    <copy todir="${rdmaserver.output.dir}/static_content">
+      <fileset dir="${module.rdmaserver.basedir}/static_content" includes="**/*" />
+    </copy>
   </target>
   
   <target name="compile.module.rdmaserver.tests" depends="compile.module.rdmaserver.production" description="compile module RDMAServer; test classes" unless="skip.tests"/>
