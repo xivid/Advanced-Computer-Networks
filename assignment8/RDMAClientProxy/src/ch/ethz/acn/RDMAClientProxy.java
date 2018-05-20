@@ -2,11 +2,10 @@ package ch.ethz.acn;
 
 import com.ibm.disni.util.GetOpt;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 
 public class RDMAClientProxy {
 
@@ -84,6 +83,7 @@ public class RDMAClientProxy {
                 Socket clientSocket = proxyServerSocket.accept();
                 BufferedReader clientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 PrintWriter clientOut = new PrintWriter(clientSocket.getOutputStream(), true);
+                DataOutputStream clientOs = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
                 // only read the first line
                 String input = clientIn.readLine();
 
@@ -95,10 +95,11 @@ public class RDMAClientProxy {
                                     tokens[1].startsWith("http://www.rdmawebpage.com/"))) {
 
                         System.out.println(clientSocket + " redirecting to RDMA server");
-                        String response = rdmaClient.request(input);
-                        System.out.println(clientSocket + " rdma server response: [" + response + "]");
-                        clientOut.print(response);
-                        clientOut.flush();
+                        ByteBuffer response = rdmaClient.request(input);
+                        System.out.println(clientSocket + " rdma full response length " + response.limit());
+                        clientOs.write(response.array());
+                        clientOs.flush();
+
                     } else {
                         System.out.println(clientSocket + " handling at proxy");
                         clientOut.print(msg404);

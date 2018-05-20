@@ -56,21 +56,19 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		buf.clear();
 	}
 
-	private String unpackMsg(ByteBuffer buf) {
+	private ByteBuffer unpackHeader(ByteBuffer buf) {
 		buf.clear();
 		int len = buf.getInt();
 		buf.limit(len + 4);
-		return StandardCharsets.US_ASCII.decode(buf).toString();
+
+		ByteBuffer ret = ByteBuffer.allocate(buf.remaining());
+		ret.put(buf);
+		ret.flip();
+		return ret;
 	}
 
-	private String unpackData(ByteBuffer buf, int len) {
-		buf.clear();
-		buf.limit(len);
-		return StandardCharsets.US_ASCII.decode(buf).toString();
-	}
 
-
-	public String request(String request) throws Exception {
+	public ByteBuffer request(String request) throws Exception {
 		// TODO: on communication failure return HTTP 504 (Gateway Time-out)
 
 		//we have passed our own endpoint factory to the group, therefore new endpoints will be of type CustomClientEndpoint
@@ -105,16 +103,17 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		ByteBuffer dataBuf = endpoint.getDataBuf();
 
 		//the response should be received in this buffer, let's print it
-		String response = unpackMsg(recvBuf);
+		ByteBuffer headerBuf = unpackHeader(recvBuf);
+		String headerStr = StandardCharsets.US_ASCII.decode(headerBuf).toString();
+		headerBuf.flip();
+
 		recvBuf.limit(recvBuf.limit()+16);
 		long addr = recvBuf.getLong();
 		int len = recvBuf.getInt();
 		int lkey = recvBuf.getInt();
 		recvBuf.clear();
-		System.out.println("[RDMAClient] message from the server: [" + response + "], length " + response.length()
+		System.out.println("[RDMAClient] header from the server: [" + headerStr + "], length " + headerStr.length()
 				+ ", Addr: " + addr + ", Len: " + len + ", Lkey: " + lkey);
-
-		sendBuf.clear();
 
 		// Use RDMA READ to get HTML content directly from server buffer
 		IbvSendWR sendWR = endpoint.getSendWR();
@@ -135,18 +134,21 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 
 		postSend = endpoint.postSend(endpoint.getWrList_send());
 		postSend.execute().free();
-		System.out.println("[RDMAClient] RDMA Read");
+		System.out.println("[RDMAClient] RDMA Read " + len + " bytes");
 		endpoint.getWcEvents().take();
 
-		System.out.print("data: [");
-		for (int i = 0; i < len; ++i) {
-			System.out.print((char) dataBuf.get());
-		}
-		dataBuf.flip();
-		System.out.println("]");
+//		System.out.print("data: [");
+//		for (int i = 0; i < len; ++i) {
+//			System.out.print((char) dataBuf.get());
+//		}
+//		dataBuf.flip();
+//		System.out.println("]");
+		dataBuf.limit(len);
 
-		response += unpackData(dataBuf, len); // dataBuf.asCharBuffer().toString();
-		System.out.println("[RDMAClient] Full Response: [" + response + "]");
+		ByteBuffer ret = ByteBuffer.allocate(headerBuf.limit() + dataBuf.limit());
+		ret.put(headerBuf).put(dataBuf);
+		// response += unpackData(dataBuf, len);
+		// System.out.println("[RDMAClient] Full Response: [" + response + "], length " + response.length());
 
 		// Send a final message to terminate connection
 		//sendWR.setWr_id(4446);
@@ -161,7 +163,7 @@ public class RDMAClient implements RdmaEndpointFactory<RDMAClient.CustomClientEn
 		// close the customClientEndpoint
 		endpoint.close();
 
-		return response;
+		return ret;
 	}
 
 	public void close() throws Exception {

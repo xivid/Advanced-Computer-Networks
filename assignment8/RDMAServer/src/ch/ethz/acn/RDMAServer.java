@@ -86,14 +86,14 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 
 		for (int i = 0; i < htmlBuf.limit(); ++i)
 			System.out.print((char) htmlBuf.get());
-		htmlBuf.flip();
+		htmlBuf.rewind();
 
 		pngBuf = readFile("static_content/network.png");
 		System.out.println("[RDMAServer] network.png: size " + pngBuf.limit() + ", first 10 bytes:");
 
 		for (int i = 0; i < 10; ++i)
 			System.out.print((char) pngBuf.get());
-		pngBuf.flip();
+		pngBuf.rewind();
 	}
 
 	public void run() throws Exception {
