@@ -29,13 +29,15 @@ public class RDMAClientProxy {
             "  <p>The proxy did not receive a timely response from server.</p>\n";
 
     private String ipAddress;
+    private int portProxy = 3721;
 
     private RDMAClient rdmaClient;
 
-    public RDMAClientProxy(String ipAddress) { this.ipAddress = ipAddress; }
+    public RDMAClientProxy(String ipAddress, int portProxy) { this.ipAddress = ipAddress; this.portProxy = portProxy; }
 
     public static void main(String args[]) {
         String ipAddress = null;
+        int portProxy = 3721;
         String[] _args = args;
         if (args.length < 1) {
             System.exit(0);
@@ -46,13 +48,16 @@ public class RDMAClientProxy {
             }
         }
 
-        GetOpt go = new GetOpt(_args, "a:");
+        GetOpt go = new GetOpt(_args, "a:p:");
         go.optErr = true;
         int ch = -1;
 
         while ((ch = go.getopt()) != GetOpt.optEOF) {
             if ((char) ch == 'a') {
                 ipAddress = go.optArgGet();
+            }
+            else if ((char) ch == 'p') {
+                portProxy = Integer.parseInt(go.optArgGet());
             }
         }
 
@@ -61,14 +66,18 @@ public class RDMAClientProxy {
             System.exit(0);
         }
 
-        new RDMAClientProxy(ipAddress).run();
+        if (portProxy == 3721) {
+            System.out.println("Using default port 3721 for proxy, you can specify the port using -p option.");
+        }
+
+        new RDMAClientProxy(ipAddress, portProxy).run();
     }
 
     public void run() {
         System.out.println("Starting RDMA client");
         initRDMAClient();
 
-        System.out.println("Starting HTTP proxy on port 3721");
+        System.out.println("Starting HTTP proxy on port " + portProxy);
         initHTTPProxy();
 
         try {
@@ -90,7 +99,7 @@ public class RDMAClientProxy {
     private void initHTTPProxy() {
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        try (ServerSocket proxyServerSocket = new ServerSocket(3721)) {
+        try (ServerSocket proxyServerSocket = new ServerSocket(portProxy)) {
             while (true) {
                 Socket clientSocket = proxyServerSocket.accept();
                 BufferedReader clientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
