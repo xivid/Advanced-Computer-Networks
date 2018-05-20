@@ -1,4 +1,4 @@
-# RDMA Client-side Proxy
+# RDMA Server
 
 Depends on `disni-1.0-jar-with-dependencies.jar` and `disni-1.0-tests.jar`.
 

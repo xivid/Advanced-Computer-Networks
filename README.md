@@ -4,7 +4,7 @@ Repository for graded assignments of the Advanced Computer Networks course at D-
 
 ## Assignment 7
 
-Introduction to OpenFlow. See `README.md` in `./assignment7".
+Introduction to OpenFlow. See `README.md` in `./assignment7`.
 
 
 ## Assignment 8

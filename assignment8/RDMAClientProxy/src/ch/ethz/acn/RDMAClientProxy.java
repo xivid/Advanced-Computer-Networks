@@ -18,6 +18,15 @@ public class RDMAClientProxy {
             "  <h1>404 Not Found</h1>\n" +
             "  <p>The requested URL was not found.</p>\n";
 
+    private static final String msg504 = "HTTP/1.1 504 Gateway Timeout\n" +
+            "Content-Type: text/html; charset=UTF-8\n" +
+            "\n<!DOCTYPE html>\n" +
+            "<html lang=en>\n" +
+            "  <meta charset=utf-8>\n" +
+            "  <title>Error 504 (Gateway Timeout)</title>\n" +
+            "  <h1>504 Gateway Timeout</h1>\n" +
+            "  <p>The proxy did not receive a timely response from server.</p>\n";
+
     private String ipAddress;
 
     private RDMAClient rdmaClient;
@@ -95,11 +104,16 @@ public class RDMAClientProxy {
                                     tokens[1].startsWith("http://www.rdmawebpage.com/"))) {
 
                         System.out.println(clientSocket + " redirecting to RDMA server");
-                        ByteBuffer response = rdmaClient.request(input);
-                        System.out.println(clientSocket + " rdma full response length " + response.limit());
-                        clientOs.write(response.array());
-                        clientOs.flush();
-
+                        try {
+                            ByteBuffer response = rdmaClient.request(input);
+                            System.out.println(clientSocket + " rdma full response length " + response.limit());
+                            clientOs.write(response.array());
+                            clientOs.flush();
+                        } catch (Exception e) {
+                            System.out.println(clientSocket + " communication failed between proxy and server, replying 504");
+                            clientOut.print(msg504);
+                            clientOut.flush();
+                        }
                     } else {
                         System.out.println(clientSocket + " handling at proxy");
                         clientOut.print(msg404);

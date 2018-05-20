@@ -135,7 +135,7 @@ public class RDMAServer implements RdmaEndpointFactory<RDMAServer.CustomServerEn
 					response = "HTTP/1.1 200 OK\n\n";
 					packMsg(clientEndpoint.getSendBuf(), response, clientEndpoint.getHtmlMr());
 				} else if (tokens[1].equals("http://www.rdmawebpage.com/network.png")) {
-					response = "HTTP/1.1 200 OK\n\n";
+					response = "HTTP/1.1 200 OK\nContent-Type: image/png\nContent-Length: " + pngBuf.limit() + "\n\n";
 					packMsg(clientEndpoint.getSendBuf(), response, clientEndpoint.getPngMr());
 				}
 			} else {
