@@ -6,7 +6,6 @@ Depends on `disni-1.0-jar-with-dependencies.jar` and `disni-1.0-tests.jar`.
 
 - `RDMAClientProxy.java`: the client-side proxy which communicates with the browser through socket and with the RDMA server through an RDMA client.
 - `RDMAClient.java`: the RDMA client used by `RDMAClientProxy.java`. Executes RDMA SEND/RECV/READ operations with the RDMA server.
-- `ReadClient.java`: only for reference.
 
 ## How to run
 
